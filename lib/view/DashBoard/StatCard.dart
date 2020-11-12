@@ -21,7 +21,16 @@ statCrad(String label, int value) {
           Divider(
             thickness: 0.5,
             color: Colors.grey[500],
+          ),
+          Padding(
+            padding: EdgeInsets.all(12),
+            child:  Text(
+              value.toString(),
+              style: TextStyle(fontSize: 24),
+              textAlign: TextAlign.left,
+            ),
           )
+         
         ],
       ),
     ),

@@ -740,7 +740,7 @@ class _BillingHomeState extends State<BillingHome> {
                                                   (value, element) =>
                                                       value + element),
                                               "total_gst": 50,
-                                              "total_amt": itemsum,
+                                              "total_amt": itemsum.toStringAsExponential(2),
                                               "subtotal": itemsum + packing,
                                               "cgst": (gstCharge / 2)
                                                   .toStringAsFixed(2),
@@ -774,6 +774,7 @@ class _BillingHomeState extends State<BillingHome> {
                                               .toStringAsFixed(2),
                                           "date": DateTime.now(),
                                           "total": grandtot + packing,
+                                          "paid": true,
                                         });
                                         await Printing.layoutPdf(
                                             onLayout: (_) =>

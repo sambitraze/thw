@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tandoorhutweb/models/MenuItem.dart';
 import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
@@ -20,16 +21,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   PageController pageController;
-  CollectionReference menuItemColRef;
   List<MenuItem> menuItems;
+  bool islaoding = true;
+  final billColRef = FirebaseFirestore.instance.collection('BillList');
+final menuItemColRef = FirebaseFirestore.instance.collection('MenuItems');
+  QuerySnapshot billsnapshot;
+  getData() async {
+    billsnapshot =
+        await billColRef.get(GetOptions(source: Source.serverAndCache));
+        await menuItemColRef.get(GetOptions(source: Source.serverAndCache));
+    setState(() {
+      islaoding = false;
+    });
+  }
+
   @override
   void initState() {
+    getData();
     pageController = PageController(
       initialPage: 0,
       keepPage: true,
     );
     super.initState();
   }
+
   @override
   void dispose() {
     pageController.dispose();
@@ -39,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
+      body: islaoding ? Center(child: CircularProgressIndicator()) : Row(
         children: [
           NavigationRail(
             elevation: 3,
@@ -154,8 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Billing(),
                 DashBoardHome(),
                 StockHome(),
-                BillingHome(
-                ),
+                BillingHome(),
               ],
               controller: pageController,
               onPageChanged: (index) {

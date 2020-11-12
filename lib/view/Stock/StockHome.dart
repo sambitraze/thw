@@ -30,7 +30,7 @@ class _StockHomeState extends State<StockHome> {
       child: StreamBuilder<QuerySnapshot>(
         stream: menuItemColRef
             .where("Item_Type", isEqualTo: type)
-            .get()
+            .get(GetOptions(source: Source.cache))
             .asStream(),
         builder:
             (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
