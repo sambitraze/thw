@@ -1,18 +1,24 @@
 import 'dart:convert';
-
+import 'dart:html';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
-import 'package:tandoorhutweb/models/MenuItem.dart';
 import 'package:http/http.dart' as http;
 import 'package:searchable_dropdown/searchable_dropdown.dart';
+import 'package:tandoorhutweb/models/Item.dart';
+import 'package:tandoorhutweb/models/cartItem.dart';
+import 'package:tandoorhutweb/models/order.dart';
+import 'package:tandoorhutweb/services/itemService.dart';
+import 'package:tandoorhutweb/services/orderService.dart';
+import 'package:tandoorhutweb/services/pdfService.dart';
 
 class BillItem {
   // int srlNo;
-  String name;
   int quantity;
+  String name;
   int price;
   int amount;
 
@@ -25,12 +31,7 @@ class BillItem {
       this.amount});
 }
 
-final menuItemColRef = FirebaseFirestore.instance.collection('MenuItems');
-final billColRef = FirebaseFirestore.instance.collection('BillList');
-
 class BillingHome extends StatefulWidget {
-  BillingHome({this.menuItems});
-  final List<MenuItem> menuItems;
   @override
   _BillingHomeState createState() => _BillingHomeState();
 }
@@ -46,17 +47,10 @@ class _BillingHomeState extends State<BillingHome> {
   TextEditingController quantity = TextEditingController();
   String cashier = 'Example name';
   bool load = false;
-  int srl = 1;
-  int billno = 0;
   List<DropdownMenuItem> getItems = [];
-  List itemList = [];
-  List srlno = [];
-  List<BillItem> billitemlist = [];
-  List<BillItem> selectedbillitemlist = [];
-  List<int> quant = [];
-  List priceunit = [];
-  List amount = [];
-  List<DataRow> rowList = [];
+
+  List<CartItem> cartItemList = [];
+  List<CartItem> selectedCartItemList = [];
 
   double itemsum = 0;
   double packing = 0;
@@ -74,32 +68,44 @@ class _BillingHomeState extends State<BillingHome> {
     //   grandtot = gstCharge + itemsum;
     // });
     setState(() {
-      billitemlist.forEach((element) {
-        itemsum += element.amount;
+      cartItemList.forEach((element) {
+        itemsum +=
+            double.parse(element.item.price) * double.parse(element.count);
       });
       gstCharge = itemsum * gstper * 0.01;
       grandtot = gstCharge + itemsum;
     });
   }
 
+  bool pageload = false;
+
   @override
   void initState() {
     super.initState();
-    menuItemColRef.get().then((value) {
-      value.docs.forEach((element) {
-        getItems.add(DropdownMenuItem(
-          child: Text(element['Item_Name']),
-          value: element['Item_Name'].toString(),
-        ));
-      });
+    getData();
+    // billColRef.doc('info').get().then(
+    //   (value) {
+    //     setState(() {
+    //       billno = value['takeid'];
+    //     });
+    //   },
+    // );
+  }
+
+  getData() async {
+    setState(() {
+      pageload = true;
     });
-    billColRef.doc('info').get().then(
-      (value) {
-        setState(() {
-          billno = value['takeid'];
-        });
-      },
-    );
+    List<Item> itemList = await ItemService.getAllItems();
+    itemList.forEach((element) {
+      getItems.add(DropdownMenuItem(
+        child: Text(element.name),
+        value: element,
+      ));
+    });
+    setState(() {
+      pageload = false;
+    });
   }
 
   packDrop() {
@@ -155,408 +161,235 @@ class _BillingHomeState extends State<BillingHome> {
     );
   }
 
-  onselectedRow(bool selected, BillItem billitem) async {
+  onselectedRow(bool selected, CartItem billitem) async {
     setState(() {
       if (selected) {
-        selectedbillitemlist.add(billitem);
+        selectedCartItemList.add(billitem);
       } else {
-        selectedbillitemlist.remove(billitem);
+        selectedCartItemList.remove(billitem);
       }
     });
   }
 
   deleteItems() async {
     setState(() {
-      if (selectedbillitemlist.isNotEmpty) {
-        List<BillItem> temp = [];
-        temp.addAll(selectedbillitemlist);
-        for (BillItem item in temp) {
-          billitemlist.remove(item);
-          selectedbillitemlist.remove(item);
+      if (selectedCartItemList.isNotEmpty) {
+        List<CartItem> temp = [];
+        temp.addAll(selectedCartItemList);
+        for (CartItem item in temp) {
+          cartItemList.remove(item);
+          selectedCartItemList.remove(item);
         }
       }
     });
   }
 
+  genOrderNo() {
+    var orderId = 
+        DateTime.now().day.toString() +
+        DateTime.now().month.toString() +
+        DateTime.now().year.toString() +
+        DateTime.now().hour.toString() +
+        DateTime.now().minute.toString() +
+        DateTime.now().second.toString() +
+        DateTime.now().millisecond.toString();
+    return orderId;
+  }
+
+  Item tempItem;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            color: Colors.black,
-            height: double.infinity,
-            width: double.infinity,
-            padding: EdgeInsets.only(left: 100, right: 100),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+      body: pageload
+          ? CircularProgressIndicator()
+          : Stack(
               children: [
                 Container(
-                  color: Colors.black,
-                  alignment: Alignment.topLeft,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  color: Colors.grey[100],
+                  height: double.infinity,
+                  width: double.infinity,
+                  padding: EdgeInsets.only(left: 100, right: 100,bottom: 25,top: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(8),
-                        width: 175,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                        alignment: Alignment.topLeft,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Invoice',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 42,
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              width: 175,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Invoice',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 42,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  Divider(
+                                    color: Colors.black,
+                                    thickness: 4,
+                                    endIndent: 15,
+                                    indent: 10,
+                                  )
+                                ],
                               ),
-                              textAlign: TextAlign.left,
                             ),
-                            Divider(
-                              color: Colors.white,
-                              thickness: 2,
-                              endIndent: 20,
-                              indent: 10,
-                            )
                           ],
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        child: DigitalClock(
-                          areaDecoration:
-                              BoxDecoration(color: Colors.transparent),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Card(
-                    color: Colors.grey[200],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: 210,
-                          width: double.infinity,
-                          color: Color.fromRGBO(206, 206, 206, 1),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Padding(
-                                      padding: EdgeInsets.only(left: 200),child: packDrop(),),
-                                      Padding(
-                                      padding: EdgeInsets.only(left: 200),child:  gstDrop(),)
-                                        
-                                       
-                                      ],
-                                    ),
-                                    Icon(Icons.receipt, size: 100)
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Near SBI ATM Godhna Road Ara, Bhojpur,\nPhone Number - 9852259112, 8340245998',
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                    Container(
-                                      // height: 100,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(15),
-                                        color: Colors.white,
-                                      ),
-                                      width: 400,
-                                      // alignment: Alignment.center,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: SearchableDropdown.single(
-                                          items: getItems,
-                                          value: itemName,
-                                          hint: 'Search',
-                                          searchHint: 'search',
-                                          onChanged: (value) {
-                                            print(value);
-                                            setState(() {
-                                              itemName.text = value;
-                                            });
-                                          },
-                                          isExpanded: true,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      height: 100,
-                                      width: 200,
-                                      alignment: Alignment.center,
-                                      child: TextFormField(
-                                        controller: quantity,
-                                        textAlign: TextAlign.center,
-                                        decoration: InputDecoration(
-                                          focusColor: Colors.white,
-                                          fillColor: Colors.white,
-                                          filled: true,
-                                          hintText: 'Quantity',
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.white,
-                                                width: 1.0),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.white,
-                                                width: 2.0),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    MaterialButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          loading = true;
-                                        });
-                                        menuItemColRef
-                                            .where("Item_Name",
-                                                isEqualTo: itemName.text)
-                                            .get()
-                                            .then(
-                                          (querySnapshot) {
-                                            if (querySnapshot.docs.length !=
-                                                0) {
-                                              querySnapshot.docs.forEach(
-                                                (result) {
-                                                  billitemlist.add(BillItem(
-                                                      name: result['Item_Name'],
-                                                      price: int.parse(
-                                                          result['Price']),
-                                                      quantity: int.parse(
-                                                          quantity.text),
-                                                      amount: int.parse(
-                                                              quantity.text) *
-                                                          int.parse(result[
-                                                              'Price'])));
-                                                  setState(() {});
-                                                  additemtotal();
-                                                },
-                                              );
-                                              setState(
-                                                () {
-                                                  srl++;
-                                                },
-                                              );
-                                            }
-                                          },
-                                        ).whenComplete(
-                                          () {
-                                            setState(
-                                              () {
-                                                loading = false;
-                                                quantity.clear();
-                                                itemName.clear();
-                                              },
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Text(
-                                        'Add',
-                                        style: TextStyle(fontSize: 22),
-                                      ),
-                                      color: Colors.orange,
-                                      padding: EdgeInsets.all(12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                    ),
-                                    loading
-                                        ? CircularProgressIndicator()
-                                        : Container(),
-                                  ],
-                                ),
-                              )
-                            ],
+                      Expanded(
+                        child: Card(
+                          color: Colors.grey[200],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ),
-                        Expanded(
-                          child: ListView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                alignment: Alignment.topCenter,
-                                padding: const EdgeInsets.all(50.0),
-                                child: Row(
+                                height: 230,
+                                width: double.infinity,
+                                color: Color.fromRGBO(206, 206, 206, 1),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(18),
-                                      ),
-                                      elevation: 5,
-                                      child: Container(
-                                        color: Colors.white,
-                                        child: DataTable(
-                                          columns: <DataColumn>[
-                                            DataColumn(
-                                              label: Text(
-                                                'Item',
-                                                style: TextStyle(
-                                                    fontStyle: FontStyle.italic,
-                                                    fontSize: 16),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15.0),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 200),
+                                                child: packDrop(),
                                               ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Unit Price',
-                                                style: TextStyle(
-                                                    fontStyle: FontStyle.italic,
-                                                    fontSize: 16),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Quantity',
-                                                style: TextStyle(
-                                                    fontStyle: FontStyle.italic,
-                                                    fontSize: 16),
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Amount',
-                                                style: TextStyle(
-                                                    fontStyle: FontStyle.italic,
-                                                    fontSize: 16),
-                                              ),
-                                            ),
-                                          ],
-                                          rows: billitemlist
-                                              .map(
-                                                (billitem) => DataRow(
-                                                  onSelectChanged: (selected) {
-                                                    onselectedRow(
-                                                        selected, billitem);
-                                                  },
-                                                  selected: selectedbillitemlist
-                                                      .contains(billitem),
-                                                  cells: [
-                                                    // DataCell(Text(billitem.srlNo
-                                                    //     .toString())),
-                                                    DataCell(Text(billitem.name
-                                                        .toString())),
-                                                    DataCell(Text(billitem.price
-                                                        .toString())),
-                                                    DataCell(Text(billitem
-                                                        .quantity
-                                                        .toString())),
-                                                    DataCell(Text(billitem
-                                                        .amount
-                                                        .toString())),
-                                                  ],
-                                                ),
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 200),
+                                                child: gstDrop(),
                                               )
-                                              .toList(),
-                                        ),
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 20),
+                                            child: Icon(Icons.receipt, size: 75),
+                                          )
+                                        ],
                                       ),
                                     ),
-                                    Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(18),
-                                      ),
-                                      elevation: 5,
-                                      child: Column(
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30),
+                                      child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Container(
-                                            height: 50,
-                                            width: 400,
-                                            alignment: Alignment.center,
-                                            color: Colors.orange[400],
-                                            child: Text(
-                                              'Total Amount',
-                                              style: TextStyle(
-                                                  fontSize: 26,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+                                          Text(
+                                            'Near SBI ATM Godhna Road Ara, Bhojpur,\nPhone Number - 9852259112, 8340245998',
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(fontSize: 18),
                                           ),
                                           Container(
                                             decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
                                               color: Colors.white,
                                             ),
-                                            height: 300,
-                                            width: 350,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                ListTile(
-                                                  leading: Text('Item Total'),
-                                                  trailing: Text('Rs ' +
-                                                      itemsum.toString()),
+                                            width: 400,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: SearchableDropdown.single(
+                                                items: getItems,
+                                                value: itemName,
+                                                hint: 'Search',
+                                                searchHint: 'Search Item',
+                                                onChanged: (value) {
+                                                  print(value.name);
+                                                  // setState(() {
+                                                  //   itemName.text = value;
+                                                  // });
+                                                  setState(() {
+                                                    tempItem = value;
+                                                  });
+                                                },
+                                                isExpanded: true,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 100,
+                                            width: 200,
+                                            alignment: Alignment.center,
+                                            child: TextFormField(
+                                              controller: quantity,
+                                              textAlign: TextAlign.center,
+                                              decoration: InputDecoration(
+                                                focusColor: Colors.white,
+                                                fillColor: Colors.white,
+                                                filled: true,
+                                                hintText: 'Quantity',
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 1.0),
                                                 ),
-                                                ListTile(
-                                                  leading: Text('Packaging'),
-                                                  trailing: Text('Rs ' +
-                                                      packing.toString()),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2.0),
                                                 ),
-                                                ListTile(
-                                                  leading: Text('GST @ ' +
-                                                      gstper.toString()),
-                                                  trailing: Text('Rs ' +
-                                                      gstCharge
-                                                          .toStringAsFixed(2)),
-                                                ),
-                                                ListTile(
-                                                  leading: Text('Grand Total'),
-                                                  trailing: Container(
-                                                    padding: EdgeInsets.all(8),
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: Colors.green,
-                                                      ),
-                                                    ),
-                                                    child: Text('Rs ' +
-                                                        (packing + grandtot)
-                                                            .toStringAsFixed(
-                                                                2)),
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
+                                            ),
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                cartItemList.add(CartItem(
+                                                  item: tempItem,
+                                                  count: quantity.text,
+                                                ));
+                                              });
+                                              additemtotal();
+                                              quantity.clear();
+                                              itemName.clear();
+                                            },
+                                            child: Text(
+                                              'Add',
+                                              style: TextStyle(fontSize: 22),
+                                            ),
+                                            color: Colors.orange,
+                                            padding: EdgeInsets.all(12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
                                             ),
                                           ),
                                         ],
@@ -565,249 +398,400 @@ class _BillingHomeState extends State<BillingHome> {
                                   ],
                                 ),
                               ),
-                              Container(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                              Expanded(
+                                child: ListView(
                                   children: [
-                                    MaterialButton(
-                                      onPressed: selectedbillitemlist.isEmpty
-                                          ? null
-                                          : () {
-                                              deleteItems();
-                                              additemtotal();
-                                            },
-                                      child: Text(
-                                        'Delete Item',
-                                        style: TextStyle(fontSize: 22),
-                                      ),
-                                      color: Colors.orange,
-                                      padding: EdgeInsets.all(18),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                      ),
-                                    ),
                                     Container(
-                                      height: 100,
-                                      width: 250,
-                                      alignment: Alignment.center,
-                                      child: TextFormField(
-                                        controller: customer,
-                                        decoration: InputDecoration(
-                                          prefixIcon: Icon(Icons.person),
-                                          focusColor: Colors.white,
-                                          fillColor: Colors.white,
-                                          filled: true,
-                                          hintText: 'Customer Name',
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.white,
-                                                width: 1.0),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.white,
-                                                width: 2.0),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      height: 100,
-                                      width: 250,
-                                      alignment: Alignment.center,
-                                      child: TextFormField(
-                                        controller: phoneNo,
-                                        decoration: InputDecoration(
-                                          prefixIcon: Icon(Icons.phone),
-                                          focusColor: Colors.white,
-                                          fillColor: Colors.white,
-                                          filled: true,
-                                          hintText: 'Phone Number',
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.white,
-                                                width: 1.0),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            borderSide: BorderSide(
-                                                color: Colors.white,
-                                                width: 2.0),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(15)),
-                                      padding: EdgeInsets.all(8),
-                                      width: 200,
-                                      alignment: Alignment.center,
-                                      child: DropdownButton(
-                                        value: type,
-                                        focusColor: Colors.white,
-                                        hint: Text('Payment Type'),
-                                        items: [
-                                          DropdownMenuItem(
-                                            child: Text('Cash'),
-                                            value: 'Cash',
-                                          ),
-                                          // DropdownMenuItem(
-                                          //   child: Text('UPI'),
-                                          //   value: 'UPI',
-                                          // ),
-                                        ],
-                                        onChanged: (value) {
-                                          setState(() {
-                                            type = value;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    MaterialButton(
-                                      onPressed: () async {
-                                        setState(() {
-                                          load = true;
-                                        });
-                                        load
-                                            ? showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertDialog(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              18)),
-                                                  title: Text('Proccesing'),
-                                                  content: Container(
-                                                    height: 100,
-                                                    width: 100,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 12.0,
-                                                          vertical: 35),
-                                                      child:
-                                                          LinearProgressIndicator(),
+                                      alignment: Alignment.topCenter,
+                                      padding: const EdgeInsets.all(50.0),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(18),
+                                            ),
+                                            elevation: 5,
+                                            child: Container(
+                                              color: Colors.white,
+                                              child: DataTable(
+                                                columns: <DataColumn>[
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Item',
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontSize: 16),
                                                     ),
                                                   ),
-                                                ),
-                                              )
-                                            : Text('');
-                                        for (int i = 0;
-                                            i < billitemlist.length;
-                                            i++) {
-                                          srlno.add(i + 1);
-                                          itemList.add(billitemlist[i].name);
-                                          quant.add(billitemlist[i].quantity);
-                                          priceunit.add(billitemlist[i].price);
-                                          amount.add(billitemlist[i].amount);
-                                        }
-
-                                        String date = DateFormat('dd-MM-yyy')
-                                            .format(DateTime.now());
-                                        print(date);
-                                        http.Response response =
-                                            await http.post(
-                                          'https://jsontopdfconverter.herokuapp.com/getPdf',
-                                          headers: <String, String>{
-                                            'Content-Type':
-                                                'application/json; charset=UTF-8',
-                                          },
-                                          body: jsonEncode(
-                                            <String, dynamic>{
-                                              "bill_no": billno,
-                                              "bill_to": customer.text,
-                                              "mob_no": phoneNo.text,
-                                              "sno": srlno,
-                                              "item": itemList,
-                                              "qty": quant,
-                                              "priceu": priceunit,
-                                              "gst": [],
-                                              "amount": amount,
-                                              "total_qty": quant.reduce(
-                                                  (value, element) =>
-                                                      value + element),
-                                              "total_gst": 50,
-                                              "total_amt": itemsum.toStringAsExponential(2),
-                                              "subtotal": itemsum + packing,
-                                              "cgst": (gstCharge / 2)
-                                                  .toStringAsFixed(2),
-                                              "sgst": (gstCharge / 2)
-                                                  .toStringAsFixed(2),
-                                              "date": date,
-                                              "total": grandtot + packing,
-                                            },
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Unit Price',
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontSize: 16),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Quantity',
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontSize: 16),
+                                                    ),
+                                                  ),
+                                                  DataColumn(
+                                                    label: Text(
+                                                      'Amount',
+                                                      style: TextStyle(
+                                                          fontStyle:
+                                                              FontStyle.italic,
+                                                          fontSize: 16),
+                                                    ),
+                                                  ),
+                                                ],
+                                                rows: cartItemList
+                                                    .map(
+                                                      (cartitem) => DataRow(
+                                                        onSelectChanged:
+                                                            (selected) {
+                                                          onselectedRow(
+                                                              selected,
+                                                              cartitem);
+                                                        },
+                                                        selected:
+                                                            selectedCartItemList
+                                                                .contains(
+                                                                    cartitem),
+                                                        cells: [
+                                                          // DataCell(Text(billitem.srlNo
+                                                          //     .toString())),
+                                                          DataCell(Text(cartitem
+                                                              .item.name
+                                                              .toString())),
+                                                          DataCell(Text(cartitem
+                                                              .item.price
+                                                              .toString())),
+                                                          DataCell(Text(cartitem
+                                                              .count
+                                                              .toString())),
+                                                          DataCell(
+                                                            Text(
+                                                              (double.parse(cartitem
+                                                                          .item
+                                                                          .price) *
+                                                                      double.parse(
+                                                                          cartitem
+                                                                              .count))
+                                                                  .toString(),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                    .toList(),
+                                              ),
+                                            ),
                                           ),
-                                        );
-                                        print(response.statusCode);
-                                        billColRef
-                                            .doc(billno.toString())
-                                            .set({
-                                          "bill_no": billno.toString(),
-                                          "bill_to": customer.text.toString(),
-                                          "mob_no": phoneNo.text.toString(),
-                                          "sno": srlno,
-                                          "item": itemList,
-                                          "qty": quant,
-                                          "priceu": priceunit,
-                                          "amount": amount,
-                                          "total_qty": quant.reduce(
-                                              (value, element) =>
-                                                  value + element),
-                                          "total_amt": itemsum,
-                                          "subtotal": itemsum + packing,
-                                          "cgst": (gstCharge / 2)
-                                              .toStringAsFixed(2),
-                                          "sgst": (gstCharge / 2)
-                                              .toStringAsFixed(2),
-                                          "date": DateTime.now(),
-                                          "total": grandtot + packing,
-                                          "paid": true,
-                                        });
-                                        await Printing.layoutPdf(
-                                            onLayout: (_) =>
-                                                response.bodyBytes);
-                                        setState(() {
-                                          srl = 1;
-                                          load = false;
-                                        });
-                                        Navigator.of(context).pop();
-                                        billno++;
-                                        billColRef.doc('info').update({
-                                          "takeid": billno,
-                                        });
-                                        print('new' + billno.toString());
-                                        billitemlist.clear();
-                                        itemList.clear();
-                                        customer.clear();
-                                        phoneNo.clear();
-                                        srlno.clear();
-                                        selectedbillitemlist.clear();
-                                        quant.clear();
-                                        priceunit.clear();
-                                        amount.clear();
-                                        rowList.clear();
-                                      },
-                                      child: Text(
-                                        'Print Bill',
-                                        style: TextStyle(fontSize: 22),
+                                          Card(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(18),
+                                            ),
+                                            elevation: 5,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  height: 50,
+                                                  width: 400,
+                                                  alignment: Alignment.center,
+                                                  color: Colors.orange[400],
+                                                  child: Text(
+                                                    'Total Amount',
+                                                    style: TextStyle(
+                                                        fontSize: 26,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                  ),
+                                                  height: 300,
+                                                  width: 350,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      ListTile(
+                                                        leading:
+                                                            Text('Item Total'),
+                                                        trailing: Text('Rs ' +
+                                                            itemsum.toString()),
+                                                      ),
+                                                      ListTile(
+                                                        leading:
+                                                            Text('Packaging'),
+                                                        trailing: Text('Rs ' +
+                                                            packing.toString()),
+                                                      ),
+                                                      ListTile(
+                                                        leading: Text('GST @ ' +
+                                                            gstper.toString()),
+                                                        trailing: Text('Rs ' +
+                                                            gstCharge
+                                                                .toStringAsFixed(
+                                                                    2)),
+                                                      ),
+                                                      ListTile(
+                                                        leading:
+                                                            Text('Grand Total'),
+                                                        trailing: Container(
+                                                          padding:
+                                                              EdgeInsets.all(8),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                              color:
+                                                                  Colors.green,
+                                                            ),
+                                                          ),
+                                                          child: Text('Rs ' +
+                                                              (packing +
+                                                                      grandtot)
+                                                                  .toStringAsFixed(
+                                                                      2)),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                      color: Colors.orange,
-                                      padding: EdgeInsets.all(18),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    Container(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          MaterialButton(
+                                            onPressed:
+                                                selectedCartItemList.isEmpty
+                                                    ? null
+                                                    : () {
+                                                        deleteItems();
+                                                        additemtotal();
+                                                      },
+                                            child: Text(
+                                              'Delete Item',
+                                              style: TextStyle(fontSize: 22),
+                                            ),
+                                            color: Colors.orange,
+                                            padding: EdgeInsets.all(18),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 100,
+                                            width: 250,
+                                            alignment: Alignment.center,
+                                            child: TextFormField(
+                                              controller: customer,
+                                              decoration: InputDecoration(
+                                                prefixIcon: Icon(Icons.person),
+                                                focusColor: Colors.white,
+                                                fillColor: Colors.white,
+                                                filled: true,
+                                                hintText: 'Customer Name',
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 1.0),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2.0),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            height: 100,
+                                            width: 250,
+                                            alignment: Alignment.center,
+                                            child: TextFormField(
+                                              controller: phoneNo,
+                                              decoration: InputDecoration(
+                                                prefixIcon: Icon(Icons.phone),
+                                                focusColor: Colors.white,
+                                                fillColor: Colors.white,
+                                                filled: true,
+                                                hintText: 'Phone Number',
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 1.0),
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(15),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.white,
+                                                      width: 2.0),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(15)),
+                                            padding: EdgeInsets.all(8),
+                                            width: 200,
+                                            alignment: Alignment.center,
+                                            child: DropdownButton(
+                                              value: type,
+                                              focusColor: Colors.white,
+                                              hint: Text('Payment Type'),
+                                              items: [
+                                                DropdownMenuItem(
+                                                  child: Text('Cash'),
+                                                  value: 'Cash',
+                                                ),
+                                                // DropdownMenuItem(
+                                                //   child: Text('UPI'),
+                                                //   value: 'UPI',
+                                                // ),
+                                              ],
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  type = value;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () async {
+                                              setState(() {
+                                                load = true;
+                                              });
+                                              load
+                                                  ? showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          AlertDialog(
+                                                        shape: RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        18)),
+                                                        title:
+                                                            Text('Proccesing'),
+                                                        content: Container(
+                                                          height: 100,
+                                                          width: 100,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        12.0,
+                                                                    vertical:
+                                                                        35),
+                                                            child:
+                                                                LinearProgressIndicator(),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : Text('');
+                                              var payload = Order(
+                                                      items: cartItemList,
+                                                      orderId: genOrderNo(),
+                                                      custName: customer.text
+                                                          .toString(),
+                                                      custNumber: phoneNo.text
+                                                          .toString(),
+                                                      paymentType: "Cash",
+                                                      orderType: "Billing",
+                                                      amount:
+                                                          itemsum.toString(),
+                                                      packing:
+                                                          packing.toString(),
+                                                      gst: gstCharge.toString(),
+                                                      date:  DateTime.now().day.toString() + '-' + DateTime.now().month.toString() + '-' + DateTime.now().year.toString(),
+                                                      gstRate:
+                                                          gstper.toString(),
+                                                      paid: true)
+                                                  .toJson();
+                                              bool ordered = await OrderService
+                                                  .createOrder(
+                                                jsonEncode(payload),
+                                              );
+                                              if (ordered) {
+                                                setState(() {
+                                                  load = false;
+                                                });
+                                              }
+                                              Uint8List pdfBytes =
+                                                  await PdfService.createPdf(
+                                                      jsonEncode(payload));
+                                              await Printing.layoutPdf(
+                                                  onLayout: (_) => pdfBytes);
+
+                                              Navigator.of(context).pop();
+                                              setState(() {
+                                                cartItemList.clear();
+                                              customer.clear();
+                                              phoneNo.clear();
+                                              selectedCartItemList.clear();
+                                              });
+                                            },
+                                            child: Text(
+                                              'Print Bill',
+                                              style: TextStyle(fontSize: 22),
+                                            ),
+                                            color: Colors.orange,
+                                            padding: EdgeInsets.all(18),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(15),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
@@ -816,15 +800,12 @@ class _BillingHomeState extends State<BillingHome> {
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
