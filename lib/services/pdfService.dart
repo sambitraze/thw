@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class PdfService {
   static Future createPdf(payload) async {
     http.Response response = await http.post(
-      "http://localhost:3000/pdfmaker",
+      "http://tandoorhut.tk/pdfmaker",
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
