@@ -1,5 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tandoorhutweb/models/order.dart';
+import 'package:tandoorhutweb/services/orderService.dart';
 import 'package:tandoorhutweb/view/DashBoard/StatCard.dart';
 
 class DashBoardHome extends StatefulWidget {
@@ -17,13 +18,20 @@ class _DashBoardHomeState extends State<DashBoardHome> {
       return "Out for";
   }
 
-  bool loading = true;
+  List<Order> orderList = [];
 
-  final billColRef = FirebaseFirestore.instance.collection('BillList');
-  QuerySnapshot billsnapshot;
+  bool loading = true;
+  double ordersum = 0.0;
+
   getData() async {
-    billsnapshot =
-        await billColRef.get(GetOptions(source: Source.serverAndCache));
+    orderList = await OrderService.getAllOrders();
+    setState(() {
+      orderList.forEach((element) {
+        ordersum += double.parse(element.amount) +
+            double.parse(element.gst) +
+            double.parse(element.packing);
+      });
+    });
     setState(() {
       loading = false;
     });
@@ -41,7 +49,6 @@ class _DashBoardHomeState extends State<DashBoardHome> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Order Data"),
-
         );
       },
     );
@@ -50,7 +57,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
   @override
   Widget build(BuildContext context) {
     return loading
-        ? CircularProgressIndicator()
+        ? Center(child: CircularProgressIndicator())
         : Container(
             color: Colors.grey[250],
             child: Column(
@@ -72,11 +79,11 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                     children: [
                       statCrad(
                         "Total Orders",
-                        billsnapshot.docs.length,
+                        orderList.length,
                       ),
                       statCrad(
                         "Total Sales  (Rs)",
-                        100,
+                        ordersum,
                       ),
                       statCrad(
                         "Total Users",
@@ -115,112 +122,91 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                           color: Colors.grey[500],
                         ),
                         Container(
-                          height: MediaQuery.of(context).size.height - 420,
-                          width: MediaQuery.of(context).size.width - 300,
-                          child: StreamBuilder(
-                            stream: FirebaseFirestore.instance
-                                .collection('BillList')
-                                .orderBy("date", descending: true)
-                                .limit(50)
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              switch (snapshot.connectionState) {
-                                case ConnectionState.waiting:
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                        backgroundColor: Colors.amber,
-                                        strokeWidth: 1),
-                                  );
-                                default:
-                                  return ListView.builder(
-                                    itemCount: 50,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: ListTile(
-                                          leading: Text(
-                                            'Order No: ' +
-                                                snapshot
-                                                    .data.docs[index]['bill_no']
-                                                    .toString(),
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          title: Text('Delivery to'),
-                                          trailing: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(snapshot
-                                                  .data.docs[index]['total']
-                                                  .toString()),
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              MaterialButton(
-                                                minWidth: 300,
-                                                onPressed: () {},
-                                                child: Text(
-                                                    'Status: ${stat(index)}'),
-                                              ),
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              ClipOval(
-                                                child: Material(
-                                                  color: Colors
-                                                      .red, // button color
-                                                  child: InkWell(
-                                                    splashColor: Colors
-                                                        .blue, // inkwell color
-                                                    child: SizedBox(
-                                                        width: 56,
-                                                        height: 56,
-                                                        child: Icon(
-                                                          Icons.delete,
-                                                          color: Colors.white,
-                                                        )),
-                                                    onTap: () {},
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 20,
-                                              ),
-                                              ClipOval(
-                                                child: Material(
-                                                  color: Colors
-                                                      .black, // button color
-                                                  child: InkWell(
-                                                    splashColor: Colors
-                                                        .green, // inkwell color
-                                                    child: SizedBox(
-                                                        width: 56,
-                                                        height: 56,
-                                                        child: Icon(
-                                                          Icons.menu,
-                                                          color: Colors.white,
-                                                        )),
-                                                    onTap: showdialog,
-                                                  ),
-                                                ),
-                                              )
-                                            ],
+                            height: MediaQuery.of(context).size.height - 420,
+                            width: MediaQuery.of(context).size.width - 300,
+                            child: ListView.builder(
+                              itemCount: orderList.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListTile(
+                                    leading: Text(
+                                      'Order No: ' + orderList[index].orderId,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    // title: Text('Delivery to'),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text((double.parse(
+                                                    orderList[index].amount) +
+                                                double.parse(
+                                                    orderList[index].gst) +
+                                                double.parse(
+                                                    orderList[index].packing))
+                                            .toString()),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        MaterialButton(
+                                          minWidth: 300,
+                                          onPressed: () {},
+                                          child: Text('Status: '),
+                                        ),
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        ClipOval(
+                                          child: Material(
+                                            color: Colors.red, // button color
+                                            child: InkWell(
+                                              splashColor:
+                                                  Colors.blue, // inkwell color
+                                              child: SizedBox(
+                                                  width: 56,
+                                                  height: 56,
+                                                  child: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.white,
+                                                  )),
+                                              onTap: () {},
+                                            ),
                                           ),
                                         ),
-                                      );
-                                    },
-                                  );
-                              }
-                            },
-                          ),
-                        )
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        ClipOval(
+                                          child: Material(
+                                            color: Colors.black, // button color
+                                            child: InkWell(
+                                              splashColor:
+                                                  Colors.green, // inkwell color
+                                              child: SizedBox(
+                                                  width: 56,
+                                                  height: 56,
+                                                  child: Icon(
+                                                    Icons.menu,
+                                                    color: Colors.white,
+                                                  )),
+                                              onTap: showdialog,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ))
                       ],
                     ),
                   ),

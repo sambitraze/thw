@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-statCrad(String label, int value) {
+statCrad(String label, var value) {
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     elevation: 7,

@@ -1,12 +1,7 @@
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:slide_digital_clock/slide_digital_clock.dart';
 import 'package:tandoorhutweb/models/Item.dart';
 import 'package:tandoorhutweb/services/itemService.dart';
-import 'package:uuid/uuid.dart';
 
 class StockHome extends StatefulWidget {
   @override

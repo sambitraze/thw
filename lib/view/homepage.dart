@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tandoorhutweb/models/Item.dart';
 import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
 import 'package:tandoorhutweb/view/Billing/BillingHome.dart';
 import 'package:tandoorhutweb/view/DashBoard/DashboardHome.dart';
@@ -19,21 +16,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
   PageController pageController;
-  bool islaoding = true;
-  final billColRef = FirebaseFirestore.instance.collection('BillList');
-final menuItemColRef = FirebaseFirestore.instance.collection('MenuItems');
-  QuerySnapshot billsnapshot;
 
   @override
   void initState() {
     pageController = PageController(
-      initialPage: 2,
+      initialPage: 0,
       keepPage: true,
     );
     super.initState();
   }
+
 
   @override
   void dispose() {
@@ -44,7 +38,7 @@ final menuItemColRef = FirebaseFirestore.instance.collection('MenuItems');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:  Row(
+      body: Row(
         children: [
           NavigationRail(
             elevation: 3,

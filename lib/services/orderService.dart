@@ -18,4 +18,19 @@ class OrderService {
       return false;
     }
   }
+
+  static Future getAllOrders() async {
+    http.Response response = await http.get(
+      "http://localhost:3000/order/",
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      var responsedata = json.decode(response.body);
+      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      return orderList;
+    } else {
+      print(response.body);
+      return false;
+    }
+  }
 }

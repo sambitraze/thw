@@ -1,12 +1,7 @@
 import 'dart:convert';
-import 'dart:html';
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
-import 'package:slide_digital_clock/slide_digital_clock.dart';
-import 'package:http/http.dart' as http;
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:tandoorhutweb/models/Item.dart';
 import 'package:tandoorhutweb/models/cartItem.dart';
@@ -15,21 +10,6 @@ import 'package:tandoorhutweb/services/itemService.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
 import 'package:tandoorhutweb/services/pdfService.dart';
 
-class BillItem {
-  // int srlNo;
-  int quantity;
-  String name;
-  int price;
-  int amount;
-
-  BillItem(
-      {
-      // this.srlNo,
-      this.name,
-      this.price,
-      this.quantity,
-      this.amount});
-}
 
 class BillingHome extends StatefulWidget {
   @override
@@ -38,17 +18,12 @@ class BillingHome extends StatefulWidget {
 
 class _BillingHomeState extends State<BillingHome> {
   String type;
-  LocalKey k;
-  bool sel = false;
-  bool loading = false;
   TextEditingController customer = TextEditingController();
   TextEditingController phoneNo = TextEditingController();
   TextEditingController itemName = TextEditingController();
   TextEditingController quantity = TextEditingController();
-  String cashier = 'Example name';
   bool load = false;
   List<DropdownMenuItem> getItems = [];
-
   List<CartItem> cartItemList = [];
   List<CartItem> selectedCartItemList = [];
 
@@ -62,11 +37,6 @@ class _BillingHomeState extends State<BillingHome> {
     itemsum = 0;
     gstCharge = 0.0;
     grandtot = 0.0;
-    // setState(() {
-    //   itemsum += val;
-    //   gstCharge = itemsum * gstper * 0.01;
-    //   grandtot = gstCharge + itemsum;
-    // });
     setState(() {
       cartItemList.forEach((element) {
         itemsum +=
