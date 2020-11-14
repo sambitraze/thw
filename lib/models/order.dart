@@ -26,6 +26,7 @@ class Order {
     this.amount,
     this.packing,
     this.gst,
+    this.status,
     this.gstRate,
     this.paid,
     this.createdAt,
@@ -44,6 +45,7 @@ class Order {
   String txtId;
   String amount;
   String date;
+  String status;
   String packing;
   String gst;
   String gstRate;
@@ -68,6 +70,7 @@ class Order {
         amount: json["amount"] == null ? null : json["amount"],
         packing: json["packing"] == null ? null : json["packing"],
         gst: json["gst"] == null ? null : json["gst"],
+        status: json["status"] == null ? null : json["status"],
         gstRate: json["gstRate"] == null ? null : json["gstRate"],
         paid: json["paid"] == null ? null : json["paid"],
         createdAt: json["createdAt"] == null
@@ -79,6 +82,7 @@ class Order {
       );
 
   Map<String, dynamic> toJson() => {
+        "_id": id,
         "items":
             items == null ? null : List<CartItem>.from(items.map((x) => x)),
         "orderId": orderId == null ? null : orderId,
@@ -90,12 +94,11 @@ class Order {
         "paymentType": paymentType == null ? null : paymentType,
         "txtId": txtId == null ? null : txtId,
         "date": date,
+        "status": status,
         "amount": amount == null ? null : amount,
         "packing": packing == null ? null : packing,
         "gst": gst == null ? null : gst,
         "gstRate": gstRate == null ? null : gstRate,
         "paid": paid == null ? null : paid,
-        "createdAt": createdAt == null ? null : createdAt.toIso8601String(),
-        "updatedAt": updatedAt == null ? null : updatedAt.toIso8601String(),
       };
 }

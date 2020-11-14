@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tandoorhutweb/models/order.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
@@ -24,6 +26,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
   double ordersum = 0.0;
 
   getData() async {
+    ordersum = 0.0;
     orderList = await OrderService.getAllOrders();
     setState(() {
       orderList.forEach((element) {
@@ -43,13 +46,32 @@ class _DashBoardHomeState extends State<DashBoardHome> {
     super.initState();
   }
 
-  void showdialog() {
+  void showdialog(Order order) {
+    var itemlists = "";
+    order.items.forEach((e) {
+      itemlists += "${e.item.name}" + " x " + "${e.count}" + "\t";
+    });
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Order Data"),
-        );
+            title: Text("Order Data"),
+            content: Container(
+              height: 300,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Bill No: ${order.orderId}"),
+                  Text("Items: $itemlists"),
+                  Text(
+                      "Total: ${double.parse(order.amount) + double.parse(order.packing) + double.parse(order.gst)}"),
+                  Text("paid: ${order.paid}"),
+                  Text("Status: ${order.status}"),
+                  Text("Billed To: ${order.custName}"),
+                  Text("Phone No: ${order.custNumber}"),
+                ],
+              ),
+            ));
       },
     );
   }
@@ -159,7 +181,8 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                         MaterialButton(
                                           minWidth: 300,
                                           onPressed: () {},
-                                          child: Text('Status: '),
+                                          child: Text(
+                                              'Status: ${orderList[index].status}'),
                                         ),
                                         SizedBox(
                                           width: 20,
@@ -174,10 +197,23 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                                   width: 56,
                                                   height: 56,
                                                   child: Icon(
-                                                    Icons.delete,
+                                                    Icons.cancel,
                                                     color: Colors.white,
                                                   )),
-                                              onTap: () {},
+                                              onTap: () async {
+                                                setState(() {
+                                                  orderList[index].status =
+                                                      "cancelled";
+                                                });
+                                                print(jsonEncode(
+                                                  orderList[index].toJson(),
+                                                ));
+                                                await OrderService.updateOrder(
+                                                  jsonEncode(
+                                                    orderList[index].toJson(),
+                                                  ),
+                                                );
+                                              },
                                             ),
                                           ),
                                         ),
@@ -197,7 +233,8 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                                     Icons.menu,
                                                     color: Colors.white,
                                                   )),
-                                              onTap: showdialog,
+                                              onTap: () =>
+                                                  showdialog(orderList[index]),
                                             ),
                                           ),
                                         )

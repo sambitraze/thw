@@ -18,6 +18,21 @@ class OrderService {
       return false;
     }
   }
+  static Future updateOrder(payload) async {
+    http.Response response = await http.put(
+      "http://tandoorhut.tk/order/update",
+      headers: {"Content-Type": "application/json"},
+      body: payload,
+    );
+    if (response.statusCode == 200) {
+      var responsedata = json.decode(response.body);
+      print(responsedata);
+      return true;
+    } else {
+      print(response.body);
+      return false;
+    }
+  }
 
   static Future getAllOrders() async {
     http.Response response = await http.get(

@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class PdfService {
@@ -9,7 +9,6 @@ class PdfService {
       body: payload,
     );
     if (response.statusCode == 200) {
-      print(response.bodyBytes);
       return response.bodyBytes;
     } else {
       print(response.body);

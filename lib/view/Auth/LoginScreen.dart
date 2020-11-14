@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   getlogin() async {
+    
     SharedPreferences pref = await SharedPreferences.getInstance();
     bool temp = pref.getBool("login");
     if (temp != null) {

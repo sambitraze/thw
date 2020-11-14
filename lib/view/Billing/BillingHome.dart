@@ -717,12 +717,13 @@ class _BillingHomeState extends State<BillingHome> {
                                                           .toString(),
                                                       paymentType: "Cash",
                                                       orderType: "Billing",
+                                                      status: "placed",
                                                       amount:
                                                           itemsum.toString(),
                                                       packing:
                                                           packing.toString(),
                                                       gst: gstCharge.toString(),
-                                                      date:  DateTime.now().day.toString() + '-' + DateTime.now().month.toString() + '-' + DateTime.now().year.toString(),
+                                                      date:  (DateTime.now().day.toString() + '-' + DateTime.now().month.toString() + '-' + DateTime.now().year.toString()).toString(),
                                                       gstRate:
                                                           gstper.toString(),
                                                       paid: true)
