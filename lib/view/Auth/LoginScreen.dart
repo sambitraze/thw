@@ -10,6 +10,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+   final scaffkey = new GlobalKey<ScaffoldState>();
   bool isLoading = false;
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -47,6 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       key: scaffkey,
       body: Stack(
         children: [
           Container(

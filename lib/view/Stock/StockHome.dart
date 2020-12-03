@@ -94,25 +94,20 @@ class _StockHomeState extends State<StockHome> {
                 children: [
                   Container(
                     alignment: Alignment.topLeft,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          padding: EdgeInsets.all(12),
-                          child: Text(
-                            'Manage\nStock',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 42,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: Text(
+                        'Manage\nStock',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
+                        textAlign: TextAlign.left,
+                      ),
                     ),
                   ),
                   Divider(

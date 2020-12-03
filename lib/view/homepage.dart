@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
 import 'package:tandoorhutweb/view/Billing/BillingHome.dart';
 import 'package:tandoorhutweb/view/DashBoard/DashboardHome.dart';
+import 'package:tandoorhutweb/view/DeliveryBoy/DeliveryBoyManage.dart';
 import 'package:tandoorhutweb/view/Stock/StockHome.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -16,13 +17,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   PageController pageController;
 
   @override
   void initState() {
     pageController = PageController(
-      initialPage: 0,
+      initialPage: 2,
       keepPage: true,
     );
     super.initState();
@@ -66,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height - 400),
+                  top: MediaQuery.of(context).size.height - 500),
               child: IconButton(
                 icon: Icon(
                   Icons.exit_to_app,
@@ -98,16 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-              // NavigationRailDestination(
-              //   icon: Icon(Icons.folder_open),
-              //   selectedIcon: Icon(Icons.folder_open),
-              //   label: Text(
-              //     'Orders',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //     ),
-              //   ),
-              // ),
               NavigationRailDestination(
                 icon: Icon(Icons.store),
                 selectedIcon: Icon(Icons.store),
@@ -117,17 +108,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.black,
                   ),
                 ),
+              ),NavigationRailDestination(
+                icon: Icon(Icons.delivery_dining),
+                selectedIcon: Icon(Icons.delivery_dining),
+                label: Text(
+                  'Delivery Boy',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
               ),
-              // NavigationRailDestination(
-              //   icon: Icon(Icons.shopping_cart),
-              //   selectedIcon: Icon(Icons.shopping_cart),
-              //   label: Text(
-              //     'Staff',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //     ),
-              //   ),
-              // ),
               NavigationRailDestination(
                 icon: Icon(Icons.receipt),
                 selectedIcon: Icon(Icons.receipt),
@@ -145,14 +135,9 @@ class _MyHomePageState extends State<MyHomePage> {
               scrollDirection: Axis.vertical,
               physics: new NeverScrollableScrollPhysics(),
               children: [
-                // DashBoard(),
-                // Orders(),
-                // Messages(),
-                // ManageMenu(),
-                // Staffpage(),
-                // Billing(),
                 DashBoardHome(),
                 StockHome(),
+                DeliveryBoyManage(),
                 BillingHome(),
               ],
               controller: pageController,

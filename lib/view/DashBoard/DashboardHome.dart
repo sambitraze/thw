@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:tandoorhutweb/models/deliveryBoy.dart';
 import 'package:tandoorhutweb/models/order.dart';
+import 'package:tandoorhutweb/services/deliveryBoyService.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
 import 'package:tandoorhutweb/view/DashBoard/StatCard.dart';
 
@@ -24,8 +26,13 @@ class _DashBoardHomeState extends State<DashBoardHome> {
 
   bool loading = true;
   double ordersum = 0.0;
+  List<DeliveryBoy> deliveryBoyList = [];
+  int userCount = 0;
+  
 
   getData() async {
+    userCount=await DeliveryBoyService.getAllUser();
+    deliveryBoyList =await DeliveryBoyService.getAllDeliveryBoy();
     ordersum = 0.0;
     orderList = await OrderService.getAllOrders();
     setState(() {
@@ -109,11 +116,11 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                       ),
                       statCrad(
                         "Total Users",
-                        100,
+                        userCount,
                       ),
                       statCrad(
                         "Total Staff",
-                        100,
+                        deliveryBoyList.length,
                       ),
                     ],
                   ),
