@@ -10,7 +10,6 @@ import 'package:tandoorhutweb/services/itemService.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
 import 'package:tandoorhutweb/services/pdfService.dart';
 
-
 class BillingHome extends StatefulWidget {
   @override
   _BillingHomeState createState() => _BillingHomeState();
@@ -155,8 +154,7 @@ class _BillingHomeState extends State<BillingHome> {
   }
 
   genOrderNo() {
-    var orderId = 
-        DateTime.now().day.toString() +
+    var orderId = DateTime.now().day.toString() +
         DateTime.now().month.toString() +
         DateTime.now().year.toString() +
         DateTime.now().hour.toString() +
@@ -179,7 +177,8 @@ class _BillingHomeState extends State<BillingHome> {
                   color: Colors.grey[100],
                   height: double.infinity,
                   width: double.infinity,
-                  padding: EdgeInsets.only(left: 100, right: 100,bottom: 25,top: 20),
+                  padding: EdgeInsets.only(
+                      left: 100, right: 100, bottom: 25, top: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -262,8 +261,10 @@ class _BillingHomeState extends State<BillingHome> {
                                             ],
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal:8.0,vertical: 20),
-                                            child: Icon(Icons.receipt, size: 75),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0, vertical: 20),
+                                            child:
+                                                Icon(Icons.receipt, size: 75),
                                           )
                                         ],
                                       ),
@@ -723,7 +724,18 @@ class _BillingHomeState extends State<BillingHome> {
                                                       packing:
                                                           packing.toString(),
                                                       gst: gstCharge.toString(),
-                                                      date:  (DateTime.now().day.toString() + '-' + DateTime.now().month.toString() + '-' + DateTime.now().year.toString()).toString(),
+                                                      date: (DateTime.now()
+                                                                  .day
+                                                                  .toString() +
+                                                              '-' +
+                                                              DateTime.now()
+                                                                  .month
+                                                                  .toString() +
+                                                              '-' +
+                                                              DateTime.now()
+                                                                  .year
+                                                                  .toString())
+                                                          .toString(),
                                                       gstRate:
                                                           gstper.toString(),
                                                       paid: true)
@@ -746,9 +758,12 @@ class _BillingHomeState extends State<BillingHome> {
                                               Navigator.of(context).pop();
                                               setState(() {
                                                 cartItemList.clear();
-                                              customer.clear();
-                                              phoneNo.clear();
-                                              selectedCartItemList.clear();
+                                                itemsum = 0;
+                                                gstCharge = 0.0;
+                                                grandtot = 0.0;
+                                                customer.clear();
+                                                phoneNo.clear();
+                                                selectedCartItemList.clear();
                                               });
                                             },
                                             child: Text(
