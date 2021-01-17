@@ -6,7 +6,7 @@ import 'package:tandoorhutweb/models/deliveryBoy.dart';
 class DeliveryBoyService {
   static Future createDeliveryBoy(payload) async {
     http.Response response = await http.post(
-      "http://tandoorhut.tk/deliveryBoy/create",
+      "http://64.225.85.5/deliveryBoy/create",
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -21,7 +21,7 @@ class DeliveryBoyService {
   }
   static Future getDeliveryBoyByEmail(email) async {
     http.Response response = await http.post(
-      "http://tandoorhut.tk/deliveryBoy/email",
+      "http://64.225.85.5/deliveryBoy/email",
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email}),
     );
@@ -36,7 +36,7 @@ class DeliveryBoyService {
   }
   static Future<bool> updateDeliveryBoy(payload) async {
     http.Response response = await http.put(
-      "http://tandoorhut.tk/deliveryBoy/update",
+      "http://64.225.85.5/deliveryBoy/update",
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -51,7 +51,7 @@ class DeliveryBoyService {
   // ignore: missing_return
   static Future<List<DeliveryBoy>> getAllDeliveryBoy() async {
     http.Response response = await http.get(
-      "http://tandoorhut.tk/deliveryBoy/",
+      "http://64.225.85.5/deliveryBoy/",
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -65,7 +65,7 @@ class DeliveryBoyService {
   }
   static Future getAllUser() async {
     http.Response response = await http.get(
-      "http://tandoorhut.tk/user/",
+      "http://64.225.85.5/user/",
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {

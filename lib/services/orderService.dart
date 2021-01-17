@@ -5,7 +5,7 @@ import 'package:tandoorhutweb/models/order.dart';
 class OrderService {
   static Future createOrder(payload) async {
     http.Response response = await http.post(
-      "http://tandoorhut.tk/order/create",
+      "http://64.225.85.5/order/create",
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -20,7 +20,7 @@ class OrderService {
   }
   static Future updateOrder(payload) async {
     http.Response response = await http.put(
-      "http://tandoorhut.tk/order/update",
+      "http://64.225.85.5/order/update",
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -36,7 +36,7 @@ class OrderService {
 
   static Future getAllOrders() async {
     http.Response response = await http.get(
-      "http://tandoorhut.tk/order/",
+      "http://64.225.85.5/order/",
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
