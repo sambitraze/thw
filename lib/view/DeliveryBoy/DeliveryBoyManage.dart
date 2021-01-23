@@ -184,13 +184,13 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
     );
     //
     deliveryBoyList.forEach((element) {
-      moreList.add(FlatButton(
+      moreList.add(TextButton(
         child: Icon(Icons.view_sidebar),
         onPressed: () {
           showDialog(
             context: context,
             // ignore: deprecated_member_use
-            child: AlertDialog(
+            builder: (context)=> AlertDialog(
               backgroundColor: Colors.grey[200],
               title: Text("DeliveryBoy Detials"),
               content: Column(
@@ -204,7 +204,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                 ],
               ),
               actions: [
-                FlatButton(
+                TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -246,7 +246,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
         ),
       );
       blockedList.add(
-        FlatButton.icon(
+        TextButton.icon(
           icon: element.blocked
               ? Icon(
                   Icons.block,
@@ -282,7 +282,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
         ),
       );
       passwordList.add(
-        FlatButton.icon(
+        TextButton.icon(
           label: Text(
             element.password,
             style: TextStyle(
@@ -295,7 +295,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
             showDialog(
               context: context,
               // ignore: deprecated_member_use
-              child: AlertDialog(
+              builder: (context)=> AlertDialog(
                 backgroundColor: Colors.grey[200],
                 title: Text("Change Password !!!"),
                 content: inputField(
@@ -304,7 +304,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                   Icon(Icons.lock),
                 ),
                 actions: [
-                  FlatButton(
+                  TextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -316,7 +316,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                       ),
                     ),
                   ),
-                  FlatButton(
+                  MaterialButton(
                     color: Colors.orange,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -500,13 +500,13 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                                 ),
                                               ),
                                             );
-                                            moreList.add(FlatButton(
+                                            moreList.add(TextButton(
                                               child: Icon(Icons.view_sidebar),
                                               onPressed: () {
                                                 showDialog(
                                                   context: context,
                                                   // ignore: deprecated_member_use
-                                                  child: AlertDialog(
+                                                  builder:(context)=> AlertDialog(
                                                     backgroundColor:
                                                         Colors.grey[200],
                                                     title: Text(
@@ -537,7 +537,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                                                   .longitude),
                                                         ]),
                                                     actions: [
-                                                      FlatButton(
+                                                      TextButton(
                                                         onPressed: () {
                                                           Navigator.pop(
                                                               context);
@@ -569,7 +569,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                               ),
                                             );
                                             blockedList.add(
-                                              FlatButton.icon(
+                                              TextButton.icon(
                                                 icon: deliveryBoy.blocked
                                                     ? Icon(
                                                         Icons.block,
@@ -615,7 +615,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                               ),
                                             );
                                             passwordList.add(
-                                              FlatButton.icon(
+                                              TextButton.icon(
                                                 label: Text(
                                                   deliveryBoy.password,
                                                   style: TextStyle(
@@ -628,7 +628,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                                   showDialog(
                                                     context: context,
                                                     // ignore: deprecated_member_use
-                                                    child: AlertDialog(
+                                                    builder: (context)=> AlertDialog(
                                                       backgroundColor:
                                                           Colors.grey[200],
                                                       title: Text(
@@ -639,7 +639,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                                         Icon(Icons.lock),
                                                       ),
                                                       actions: [
-                                                        FlatButton(
+                                                        TextButton(
                                                           onPressed: () {
                                                             Navigator.pop(
                                                                 context);
@@ -657,7 +657,7 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                                             ),
                                                           ),
                                                         ),
-                                                        FlatButton(
+                                                        MaterialButton(
                                                           color: Colors.orange,
                                                           shape: RoundedRectangleBorder(
                                                               borderRadius:

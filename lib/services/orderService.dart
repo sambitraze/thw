@@ -48,4 +48,19 @@ class OrderService {
       return false;
     }
   }
+
+  static Future getAllOrdersByCount(skip, limit) async {
+    http.Response response = await http.post(
+      "http://64.225.85.5/order/count",
+      headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
+    );
+    if (response.statusCode == 200) {
+      var responsedata = json.decode(response.body);
+      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      return orderList;
+    } else {
+      print(response.body);
+      return false;
+    }
+  } 
 }

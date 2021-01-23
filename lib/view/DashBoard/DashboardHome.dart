@@ -34,7 +34,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
     userCount=await DeliveryBoyService.getAllUser();
     deliveryBoyList =await DeliveryBoyService.getAllDeliveryBoy();
     ordersum = 0.0;
-    orderList = await OrderService.getAllOrders();
+    orderList = await OrderService.getAllOrdersByCount(0,30);
     setState(() {
       orderList.forEach((element) {
         ordersum += double.parse(element.amount) +

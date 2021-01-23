@@ -5,6 +5,7 @@ import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
 import 'package:tandoorhutweb/view/Billing/BillingHome.dart';
 import 'package:tandoorhutweb/view/DashBoard/DashboardHome.dart';
 import 'package:tandoorhutweb/view/DeliveryBoy/DeliveryBoyManage.dart';
+import 'package:tandoorhutweb/view/Orders/OrderHistory.dart';
 import 'package:tandoorhutweb/view/Stock/StockHome.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -67,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height - 500),
+                  top: MediaQuery.of(context).size.height - 600),
               child: IconButton(
                 icon: Icon(
                   Icons.exit_to_app,
@@ -94,6 +95,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 selectedIcon: Icon(Icons.dashboard),
                 label: Text(
                   'DashBoard',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.history),
+                selectedIcon: Icon(Icons.history),
+                label: Text(
+                  'Orders',
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -136,6 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
               physics: new NeverScrollableScrollPhysics(),
               children: [
                 DashBoardHome(),
+                OrderHistory(),
                 StockHome(),
                 DeliveryBoyManage(),
                 BillingHome(),
