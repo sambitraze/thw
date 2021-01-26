@@ -5,6 +5,9 @@
 import 'dart:convert';
 
 import 'package:tandoorhutweb/models/cartItem.dart';
+import 'package:tandoorhutweb/models/customer.dart';
+import 'package:tandoorhutweb/models/deliveryBy.dart';
+import 'package:tandoorhutweb/models/offers.dart';
 
 Order orderFromJson(String str) => Order.fromJson(json.decode(str));
 
@@ -27,6 +30,7 @@ class Order {
     this.packing,
     this.gst,
     this.status,
+    this.offer,
     this.gstRate,
     this.paid,
     this.createdAt,
@@ -36,13 +40,14 @@ class Order {
   String id;
   List<CartItem> items;
   String orderId;
-  String customer;
+  Customer customer;
   String custName;
   String custNumber;
-  String deliveryby;
+  DeliveryBy deliveryby;
   String orderType;
   String paymentType;
   String txtId;
+  Offer offer;
   String amount;
   String date;
   String status;
@@ -60,13 +65,14 @@ class Order {
             : List<CartItem>.from(
                 json["items"].map((x) => CartItem.fromJson(x))),
         orderId: json["orderId"] == null ? null : json["orderId"],
-        customer: json["customer"] == null ? null : json["customer"],
+        customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
         custName: json["custName"] == null ? null : json["custName"],
         custNumber: json["custNumber"] == null ? null : json["custNumber"],
-        deliveryby: json["deliveryby"] == null ? null : json["deliveryby"],
+        deliveryby: json["deliveryby"] == null ? null : DeliveryBy.fromJson(json["deliveryby"]),
         orderType: json["orderType"] == null ? null : json["orderType"],
         paymentType: json["paymentType"] == null ? null : json["paymentType"],
         txtId: json["txtId"] == null ? null : json["txtId"],
+        offer: json["offer"] == null ? null : Offer.fromJson(json["offer"]),
         amount: json["amount"] == null ? null : json["amount"],
         packing: json["packing"] == null ? null : json["packing"],
         gst: json["gst"] == null ? null : json["gst"],
@@ -86,7 +92,7 @@ class Order {
         "items":
             items == null ? null : List<CartItem>.from(items.map((x) => x)),
         "orderId": orderId == null ? null : orderId,
-        "customer": customer == null ? null : customer,
+        "customer": customer == null ? null : customer.toJson(),
         "custName": custName == null ? null : custName,
         "custNumber": custNumber == null ? null : custNumber,
         "deliveryby": deliveryby == null ? null : deliveryby,
@@ -94,6 +100,7 @@ class Order {
         "paymentType": paymentType == null ? null : paymentType,
         "txtId": txtId == null ? null : txtId,
         "date": date,
+        "offer": offer == null? null : offer.toJson(),
         "status": status,
         "amount": amount == null ? null : amount,
         "packing": packing == null ? null : packing,

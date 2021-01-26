@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:tandoorhutweb/models/deliveryBoy.dart';
 import 'package:tandoorhutweb/models/order.dart';
@@ -13,35 +11,21 @@ class DashBoardHome extends StatefulWidget {
 }
 
 class _DashBoardHomeState extends State<DashBoardHome> {
-  stat(int a) {
-    if (a == 0)
-      return "placed";
-    else if (a > 0 && a < 10)
-      return "Confirmed";
-    else
-      return "Out for";
-  }
+  
 
   List<Order> orderList = [];
 
   bool loading = true;
-  double ordersum = 0.0;
-  List<DeliveryBoy> deliveryBoyList = [];
   int userCount = 0;
+  int orderCount = 0;
+  int staffCount = 0;
   
 
   getData() async {
-    userCount=await DeliveryBoyService.getAllUser();
-    deliveryBoyList =await DeliveryBoyService.getAllDeliveryBoy();
-    ordersum = 0.0;
-    orderList = await OrderService.getAllOrdersByCount(0,30);
-    setState(() {
-      orderList.forEach((element) {
-        ordersum += double.parse(element.amount) +
-            double.parse(element.gst) +
-            double.parse(element.packing);
-      });
-    });
+    orderList = await OrderService.getAllOrdersByCount(0,30);  
+    userCount= await DeliveryBoyService.userCount();  
+    staffCount= await DeliveryBoyService.deliveryBoyCount();  
+    orderCount = await OrderService.orderCount();
     setState(() {
       loading = false;
     });
@@ -108,11 +92,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                     children: [
                       statCrad(
                         "Total Orders",
-                        orderList.length,
-                      ),
-                      statCrad(
-                        "Total Sales  (Rs)",
-                        ordersum,
+                        orderCount,
                       ),
                       statCrad(
                         "Total Users",
@@ -120,7 +100,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                       ),
                       statCrad(
                         "Total Staff",
-                        deliveryBoyList.length,
+                        staffCount,
                       ),
                     ],
                   ),
@@ -165,7 +145,6 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    // title: Text('Delivery to'),
                                     trailing: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
@@ -190,39 +169,6 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                           onPressed: () {},
                                           child: Text(
                                               'Status: ${orderList[index].status}'),
-                                        ),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                        ClipOval(
-                                          child: Material(
-                                            color: Colors.red, // button color
-                                            child: InkWell(
-                                              splashColor:
-                                                  Colors.blue, // inkwell color
-                                              child: SizedBox(
-                                                  width: 56,
-                                                  height: 56,
-                                                  child: Icon(
-                                                    Icons.cancel,
-                                                    color: Colors.white,
-                                                  )),
-                                              onTap: () async {
-                                                setState(() {
-                                                  orderList[index].status =
-                                                      "cancelled";
-                                                });
-                                                print(jsonEncode(
-                                                  orderList[index].toJson(),
-                                                ));
-                                                await OrderService.updateOrder(
-                                                  jsonEncode(
-                                                    orderList[index].toJson(),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ),
                                         ),
                                         SizedBox(
                                           width: 20,

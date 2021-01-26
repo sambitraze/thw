@@ -7,6 +7,7 @@ import 'package:tandoorhutweb/view/DashBoard/DashboardHome.dart';
 import 'package:tandoorhutweb/view/DeliveryBoy/DeliveryBoyManage.dart';
 import 'package:tandoorhutweb/view/Orders/OrderHistory.dart';
 import 'package:tandoorhutweb/view/Stock/StockHome.dart';
+import 'package:tandoorhutweb/view/offertop/offerTop.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -68,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height - 600),
+                  top: MediaQuery.of(context).size.height - 700),
               child: IconButton(
                 icon: Icon(
                   Icons.exit_to_app,
@@ -95,6 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 selectedIcon: Icon(Icons.dashboard),
                 label: Text(
                   'DashBoard',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.local_offer),
+                selectedIcon: Icon(Icons.local_offer),
+                label: Text(
+                  'Offer/Top8',
                   style: TextStyle(
                     color: Colors.black,
                   ),
@@ -147,6 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
               physics: new NeverScrollableScrollPhysics(),
               children: [
                 DashBoardHome(),
+                OfferTop(),
                 OrderHistory(),
                 StockHome(),
                 DeliveryBoyManage(),

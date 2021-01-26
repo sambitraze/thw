@@ -5,8 +5,10 @@ import 'package:printing/printing.dart';
 import 'package:searchable_dropdown/searchable_dropdown.dart';
 import 'package:tandoorhutweb/models/Item.dart';
 import 'package:tandoorhutweb/models/cartItem.dart';
+import 'package:tandoorhutweb/models/offers.dart';
 import 'package:tandoorhutweb/models/order.dart';
 import 'package:tandoorhutweb/services/itemService.dart';
+import 'package:tandoorhutweb/services/offerService.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
 import 'package:tandoorhutweb/services/pdfService.dart';
 
@@ -25,12 +27,16 @@ class _BillingHomeState extends State<BillingHome> {
   List<DropdownMenuItem> getItems = [];
   List<CartItem> cartItemList = [];
   List<CartItem> selectedCartItemList = [];
+  List<Offer> offers = [];
+  List<DropdownMenuItem> offerList = [];
 
   double itemsum = 0;
   double packing = 0;
   double gstper = 0;
   double gstCharge = 0.0;
   double grandtot = 0.0;
+
+  Offer offer = Offer(block: false, percentage: "0", offerCode: "No Offer");
 
   additemtotal() {
     itemsum = 0;
@@ -42,7 +48,8 @@ class _BillingHomeState extends State<BillingHome> {
             double.parse(element.item.price) * double.parse(element.count);
       });
       gstCharge = itemsum * gstper * 0.01;
-      grandtot = gstCharge + itemsum;
+      double offerdeduct = double.parse(offer.percentage) * itemsum * 0.01;
+      grandtot = gstCharge + itemsum - offerdeduct;
     });
   }
 
@@ -52,25 +59,31 @@ class _BillingHomeState extends State<BillingHome> {
   void initState() {
     super.initState();
     getData();
-    // billColRef.doc('info').get().then(
-    //   (value) {
-    //     setState(() {
-    //       billno = value['takeid'];
-    //     });
-    //   },
-    // );
   }
-
+List<Item> itemList = [];
   getData() async {
     setState(() {
       pageload = true;
     });
-    List<Item> itemList = await ItemService.getAllItems();
+    itemList = await ItemService.getAllItems();
+    offers = await OfferService.getUnBlockedOffers();
+    print(offers.length);
+    offers.forEach((element) {
+      offerList.add(
+        DropdownMenuItem(
+          child: Text(element.offerCode + "\n" + element.percentage + "%"),
+          value: element,
+        ),
+      );
+    });
+    offer = offers.last;
     itemList.forEach((element) {
-      getItems.add(DropdownMenuItem(
-        child: Text(element.name),
-        value: element,
-      ));
+      setState(() {
+        getItems.add(DropdownMenuItem(
+          child: Text(element.name),
+          value: element.name,
+        ));
+      });
     });
     setState(() {
       pageload = false;
@@ -291,18 +304,15 @@ class _BillingHomeState extends State<BillingHome> {
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: SearchableDropdown.single(
+                                              child: SearchableDropdown(
                                                 items: getItems,
-                                                value: itemName,
                                                 hint: 'Search',
-                                                searchHint: 'Search Item',
+                                                isCaseSensitiveSearch: false,                                                
+                                                searchHint: 'Search Item',                
                                                 onChanged: (value) {
-                                                  print(value.name);
-                                                  // setState(() {
-                                                  //   itemName.text = value;
-                                                  // });
+                                                  int ind =itemList.indexWhere((element) => element.name == value);
                                                   setState(() {
-                                                    tempItem = value;
+                                                    tempItem = itemList[ind];
                                                   });
                                                 },
                                                 isExpanded: true,
@@ -529,6 +539,37 @@ class _BillingHomeState extends State<BillingHome> {
                                                                     2)),
                                                       ),
                                                       ListTile(
+                                                        leading: Text(
+                                                            'Apply\nOffer'),
+                                                        title:
+                                                            DropdownButtonHideUnderline(
+                                                          child: DropdownButton(
+                                                            items: offerList,
+                                                            hint: Text(
+                                                                "Choose Offer"),
+                                                            value: offer,
+                                                            onChanged: (val) {
+                                                              setState(() {
+                                                                offer = val;
+                                                              });
+                                                              additemtotal();
+                                                            },
+                                                          ),
+                                                        ),
+                                                        trailing: Text(
+                                                          '-Rs ' +
+                                                              (double.parse(offer
+                                                                          .percentage) *
+                                                                      itemsum *
+                                                                      0.01)
+                                                                  .toStringAsFixed(
+                                                                      2),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.red),
+                                                        ),
+                                                      ),
+                                                      ListTile(
                                                         leading:
                                                             Text('Grand Total'),
                                                         trailing: Container(
@@ -653,29 +694,32 @@ class _BillingHomeState extends State<BillingHome> {
                                             padding: EdgeInsets.all(8),
                                             width: 200,
                                             alignment: Alignment.center,
-                                            child: DropdownButton(
-                                              value: type,
-                                              focusColor: Colors.white,
-                                              hint: Text('Payment Type'),
-                                              items: [
-                                                DropdownMenuItem(
-                                                  child: Text('Cash'),
-                                                  value: 'Cash',
-                                                ),
-                                                // DropdownMenuItem(
-                                                //   child: Text('UPI'),
-                                                //   value: 'UPI',
-                                                // ),
-                                              ],
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  type = value;
-                                                });
-                                              },
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton(
+                                                value: type,
+                                                focusColor: Colors.white,
+                                                hint: Text('Payment Type'),
+                                                items: [
+                                                  DropdownMenuItem(
+                                                    child: Text('Cash'),
+                                                    value: 'Cash',
+                                                  ),
+                                                  // DropdownMenuItem(
+                                                  //   child: Text('UPI'),
+                                                  //   value: 'UPI',
+                                                  // ),
+                                                ],
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    type = value;
+                                                  });
+                                                },
+                                              ),
                                             ),
                                           ),
                                           MaterialButton(
                                             onPressed: () async {
+                                              print(offer.toJson());
                                               setState(() {
                                                 load = true;
                                               });
@@ -719,6 +763,7 @@ class _BillingHomeState extends State<BillingHome> {
                                                       paymentType: "Cash",
                                                       orderType: "Billing",
                                                       status: "placed",
+                                                      offer: offer,
                                                       amount:
                                                           itemsum.toString(),
                                                       packing:

@@ -63,4 +63,17 @@ class OrderService {
       return false;
     }
   } 
+   static Future orderCount() async {
+    http.Response response = await http.get(
+      "http://64.225.85.5/order/count",
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      var responseMap = json.decode(response.body);
+      return responseMap["ordercount"];
+    } else {
+      print(response.body);
+      return 0;
+    }
+  }
 }

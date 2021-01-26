@@ -77,5 +77,31 @@ class DeliveryBoyService {
     }
   }
 
+  static Future userCount() async {
+    http.Response response = await http.post(
+      "http://64.225.85.5/user/count",
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      var responseMap = json.decode(response.body);      
+      return responseMap["usercount"];
+    } else {
+      print(response.body);
+      return 0;
+    }
+  }
+  static Future deliveryBoyCount() async {
+    http.Response response = await http.get(
+      "http://64.225.85.5/deliveryBoy/count",
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode == 200) {
+      var responseMap = json.decode(response.body);      
+      return responseMap["deliverycount"];
+    } else {
+      print(response.body);
+      return 0;
+    }
+  }
   
 }
