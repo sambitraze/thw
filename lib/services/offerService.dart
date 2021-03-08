@@ -18,6 +18,7 @@ class OfferService {
     }
   }
 
+  // ignore: missing_return
   static Future<List<Offer>> getOffers() async {
     http.Response response = await http.get(
       "http://64.225.85.5/offer/",
@@ -31,6 +32,7 @@ class OfferService {
     } else {
       print(response.body);
     }
+  // ignore: missing_return
   }static Future<List<Offer>> getUnBlockedOffers() async {
     http.Response response = await http.get(
       "http://64.225.85.5/offer/unblocked",

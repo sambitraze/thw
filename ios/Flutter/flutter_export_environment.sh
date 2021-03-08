@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\SDKs\flutterd"
+export "FLUTTER_ROOT=C:\SDKs\flutters"
 export "FLUTTER_APPLICATION_PATH=D:\Projects\thw"
 export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"

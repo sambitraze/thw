@@ -19,13 +19,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
   PageController pageController;
 
   @override
   void initState() {
     pageController = PageController(
-      initialPage: 0,
+      initialPage: 2,
       keepPage: true,
     );
     super.initState();
@@ -56,11 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _selectedIndex = index;
                 },
               );
-              pageController.animateToPage(
-                index,
-                duration: Duration(milliseconds: 600),
-                curve: Curves.ease,
-              );
+              pageController.jumpToPage(index);
             },
             leading: Padding(
               padding: const EdgeInsets.all(8.0),

@@ -18,6 +18,7 @@ class ItemService {
     }
   }
 
+  // ignore: missing_return
   static Future<List<Item>> getAllItems() async {
     http.Response response = await http.get(
       "http://64.225.85.5/item/",
