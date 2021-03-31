@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tandoorhutweb/models/deliveryBoy.dart';
 import 'package:tandoorhutweb/models/order.dart';
 import 'package:tandoorhutweb/services/deliveryBoyService.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
@@ -163,6 +162,20 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                                         ),
                                         SizedBox(
                                           width: 20,
+                                        ),
+                                        Text(
+                                          'Order Type: ',
+                                          style: TextStyle(
+                                              fontSize: 22,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          orderList[index].orderType,
+                                          style: TextStyle(
+                                            fontSize: 20,),
+                                        ),
+                                        SizedBox(
+                                          width: 50,
                                         ),
                                         MaterialButton(
                                           minWidth: 300,

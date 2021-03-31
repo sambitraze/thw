@@ -24,17 +24,17 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.0
-  firebase: ^7.3.2
-  firebase_auth: ^0.18.3
-  google_fonts: ^1.1.1
-  http: ^0.12.2
-  intl: ^0.16.1
-  printing: ^3.7.1
+  firebase: ^9.0.1
+  firebase_auth: ^1.0.1
+  google_fonts: ^2.0.0
+  http: ^0.13.1
+  intl: ^0.17.0
+  printing: ^5.0.4
   responsive_framework:
   searchable_dropdown: ^1.1.3
-  shared_preferences: ^0.5.12+2
+  shared_preferences: ^2.0.5
   slide_digital_clock: ^1.0.0
-  uuid: ^2.2.2
+  uuid: ^3.0.3
 
 dev_dependencies:
   flutter_test:

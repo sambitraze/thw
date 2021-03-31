@@ -5,7 +5,7 @@ import 'package:tandoorhutweb/models/top.dart';
 class TopService {
   static Future createTop(payload) async {
     http.Response response = await http.post(
-      "http://64.225.85.5/top/create",
+      Uri.parse("http://64.225.85.5/top/create"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -17,9 +17,9 @@ class TopService {
     }
   }
 
-  static Future<List<Top>> getTops() async {
+  static Future getTops() async {
     http.Response response = await http.get(
-      "http://64.225.85.5/top/",
+      Uri.parse("http://64.225.85.5/top/"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -34,7 +34,7 @@ class TopService {
 
   static Future<bool> updateTop(payload) async {
     http.Response response = await http.put(
-      "http://64.225.85.5/top/update",
+      Uri.parse("http://64.225.85.5/top/update"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );

@@ -5,7 +5,7 @@ import 'package:tandoorhutweb/models/order.dart';
 class OrderService {
   static Future createOrder(payload) async {
     http.Response response = await http.post(
-      "http://64.225.85.5/order/create",
+      Uri.parse("http://64.225.85.5/order/create"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -20,7 +20,7 @@ class OrderService {
   }
   static Future updateOrder(payload) async {
     http.Response response = await http.put(
-      "http://64.225.85.5/order/update",
+      Uri.parse("http://64.225.85.5/order/update"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -36,7 +36,7 @@ class OrderService {
 
   static Future getAllOrders() async {
     http.Response response = await http.get(
-      "http://64.225.85.5/order/",
+      Uri.parse("http://64.225.85.5/order/"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -51,7 +51,7 @@ class OrderService {
 
   static Future getAllOrdersByCount(skip, limit) async {
     http.Response response = await http.post(
-      "http://64.225.85.5/order/count",
+      Uri.parse("http://64.225.85.5/order/count"),
       headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
     );
     if (response.statusCode == 200) {
@@ -65,7 +65,7 @@ class OrderService {
   } 
    static Future orderCount() async {
     http.Response response = await http.get(
-      "http://64.225.85.5/order/count",
+      Uri.parse("http://64.225.85.5/order/count"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {

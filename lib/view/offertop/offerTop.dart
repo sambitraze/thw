@@ -365,7 +365,6 @@ class _OfferTopState extends State<OfferTop> {
                               child: ListView.builder(
                                 itemCount: 8,
                                 itemBuilder: (context, index) {
-                                  Item item;
                                   return Container(
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 32, vertical: 16),

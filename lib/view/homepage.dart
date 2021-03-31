@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
 import 'package:tandoorhutweb/view/Billing/BillingHome.dart';
+import 'package:tandoorhutweb/view/Booking/bookingScreen.dart';
 import 'package:tandoorhutweb/view/DashBoard/DashboardHome.dart';
 import 'package:tandoorhutweb/view/DeliveryBoy/DeliveryBoyManage.dart';
 import 'package:tandoorhutweb/view/Orders/OrderHistory.dart';
@@ -19,13 +20,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 2;
+  int _selectedIndex =4;
   PageController pageController;
 
   @override
   void initState() {
     pageController = PageController(
-      initialPage: 2,
+      initialPage: 4,
       keepPage: true,
     );
     super.initState();
@@ -65,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height - 700),
+                  top: MediaQuery.of(context).size.height - 750),
               child: IconButton(
                 icon: Icon(
                   Icons.exit_to_app,
@@ -126,6 +127,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.black,
                   ),
                 ),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.menu_book),
+                selectedIcon: Icon(Icons.menu_book),
+                label: Text(
+                  'Bookings',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
               ),NavigationRailDestination(
                 icon: Icon(Icons.delivery_dining),
                 selectedIcon: Icon(Icons.delivery_dining),
@@ -157,6 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 OfferTop(),
                 OrderHistory(),
                 StockHome(),
+                BookingScreen(),
                 DeliveryBoyManage(),
                 BillingHome(),
               ],

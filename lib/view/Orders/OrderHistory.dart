@@ -137,95 +137,94 @@ class _OrderHistoryState extends State<OrderHistory> {
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          orderList[index].orderType == "Delivery" ? Text(
-                                            'Delivery',
+                                          Text("Rs. " +
+                                              (double.parse(orderList[index]
+                                                          .amount) +
+                                                      double.parse(
+                                                          orderList[index].gst))
+                                                  .toString()),
+                                          SizedBox(
+                                            width: 50,
+                                          ),
+                                          Text(
+                                            'Order Type: ',
                                             style: TextStyle(
-                                                fontSize: 20,
+                                                fontSize: 22,
                                                 fontWeight: FontWeight.bold),
-                                          ): Text(""),
+                                          ),
+                                          Text(
+                                            orderList[index].orderType,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                            ),
+                                          ),
                                           SizedBox(
                                             width: 50,
                                           ),
-                                          Text((double.parse(
-                                                      orderList[index].amount) +
-                                                  double.parse(
-                                                      orderList[index].gst))
-                                              .toString()),
-                                          SizedBox(
-                                            width: 50,
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text('Status: '),
-                                              DropdownButton(
-                                                items: [
-                                                  DropdownMenuItem(
-                                                    child: Text("placed"),
-                                                    value: "placed",
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    child: Text(
-                                                        "out for delivery"),
-                                                    value: "out for delivery",
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    child: Text("cooking"),
-                                                    value: "cooking",
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    child: Text("completed"),
-                                                    value: "completed",
-                                                  ),
-                                                  DropdownMenuItem(
-                                                    child: Text("cancelled"),
-                                                    value: "cancelled",
-                                                  ),
-                                                ],
-                                                value: orderList[index].status,
-                                                onChanged: (val) {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        AlertDialog(
-                                                      content: Text(
-                                                          "Do you want to status of Order no : ${orderList[index].orderId} to $val ?"),
-                                                      actions: [
-                                                        MaterialButton(
-                                                          child: Text("Yes"),
-                                                          onPressed: () async {
-                                                            setState(
-                                                              () {
-                                                                orderList[index]
-                                                                        .status =
-                                                                    val;
-                                                              },
-                                                            );
-                                                            await OrderService
-                                                                .updateOrder(
-                                                              jsonEncode(
-                                                                orderList[index]
-                                                                    .toJson(),
-                                                              ),
-                                                            );
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                        ),
-                                                        MaterialButton(
-                                                          child: Text("No"),
-                                                          onPressed: () async {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                        )
-                                                      ],
-                                                    ),
-                                                  );
-                                                },
-                                              )
+                                          Text('Status: '),
+                                          DropdownButton(
+                                            items: [
+                                              DropdownMenuItem(
+                                                child: Text("placed"),
+                                                value: "placed",
+                                              ),
+                                              DropdownMenuItem(
+                                                child: Text("out for delivery"),
+                                                value: "out for delivery",
+                                              ),
+                                              DropdownMenuItem(
+                                                child: Text("cooking"),
+                                                value: "cooking",
+                                              ),
+                                              DropdownMenuItem(
+                                                child: Text("completed"),
+                                                value: "completed",
+                                              ),
+                                              DropdownMenuItem(
+                                                child: Text("cancelled"),
+                                                value: "cancelled",
+                                              ),
                                             ],
+                                            value: orderList[index].status,
+                                            onChanged: (val) {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                  content: Text(
+                                                      "Do you want to status of Order no : ${orderList[index].orderId} to $val ?"),
+                                                  actions: [
+                                                    MaterialButton(
+                                                      child: Text("Yes"),
+                                                      onPressed: () async {
+                                                        setState(
+                                                          () {
+                                                            orderList[index]
+                                                                .status = val;
+                                                          },
+                                                        );
+                                                        await OrderService
+                                                            .updateOrder(
+                                                          jsonEncode(
+                                                            orderList[index]
+                                                                .toJson(),
+                                                          ),
+                                                        );
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                    MaterialButton(
+                                                      child: Text("No"),
+                                                      onPressed: () async {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            },
                                           ),
                                           SizedBox(
                                             width: 50,
