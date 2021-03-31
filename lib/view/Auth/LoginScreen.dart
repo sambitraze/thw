@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: InkWell(
                     onTap: () {
                       SnackBar(
-                        content: Text("Version: 1.0"),
+                        content: Text("Version: 2.0"),
                       );
                     },
                     child: Text(

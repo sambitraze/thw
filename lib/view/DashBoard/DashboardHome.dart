@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tandoorhutweb/models/order.dart';
+import 'package:tandoorhutweb/services/bookingService.dart';
 import 'package:tandoorhutweb/services/deliveryBoyService.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
+import 'package:tandoorhutweb/services/tableService.dart';
 import 'package:tandoorhutweb/view/DashBoard/StatCard.dart';
 
 class DashBoardHome extends StatefulWidget {
@@ -18,6 +20,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
   int userCount = 0;
   int orderCount = 0;
   int staffCount = 0;
+  int bookingCount = 0;
   
 
   getData() async {
@@ -25,6 +28,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
     userCount= await DeliveryBoyService.userCount();  
     staffCount= await DeliveryBoyService.deliveryBoyCount();  
     orderCount = await OrderService.orderCount();
+    bookingCount = await BookingService.bookingCount();
     setState(() {
       loading = false;
     });
@@ -100,6 +104,10 @@ class _DashBoardHomeState extends State<DashBoardHome> {
                       statCrad(
                         "Total Staff",
                         staffCount,
+                      ),
+                      statCrad(
+                        "Total Bookings",
+                        bookingCount,
                       ),
                     ],
                   ),

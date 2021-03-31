@@ -20,13 +20,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex =4;
+  int _selectedIndex =0;
   PageController pageController;
 
   @override
   void initState() {
     pageController = PageController(
-      initialPage: 4,
+      initialPage: 0,
       keepPage: true,
     );
     super.initState();

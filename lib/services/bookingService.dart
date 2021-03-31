@@ -1,47 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:tandoorhutweb/models/order.dart';
+import 'package:tandoorhutweb/models/booking.dart';
 
-class OrderService {
-  static Future createOrder(payload) async {
+class BookingService {
+
+  static Future getTodayBooking(date) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/order/create"),
+      Uri.parse("http://64.225.85.5/booking/today"),
       headers: {"Content-Type": "application/json"},
-      body: payload,
+      body: jsonEncode(({"date": date})),
     );
     if (response.statusCode == 200) {
-      var responsedata = json.decode(response.body);
-      print(responsedata);
-      return true;
-    } else {
-      print(response.body);
-      return false;
-    }
-  }
-  static Future updateOrder(payload) async {
-    http.Response response = await http.put(
-      Uri.parse("http://64.225.85.5/order/update"),
-      headers: {"Content-Type": "application/json"},
-      body: payload,
-    );
-    if (response.statusCode == 200) {
-      var responsedata = json.decode(response.body);
-      print(responsedata);
-      return true;
-    } else {
-      print(response.body);
-      return false;
-    }
-  }
-
-  static Future getAllOrders() async {
-    http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/order/"),
-      headers: {"Content-Type": "application/json"},
-    );
-    if (response.statusCode == 200) {
-      var responsedata = json.decode(response.body);
-      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      var responseData = json.decode(response.body);
+      List<Booking> orderList = responseData
+          .map<Booking>((itemMap) => Booking.fromJson(itemMap))
+          .toList();
       return orderList;
     } else {
       print(response.body);
@@ -49,28 +22,32 @@ class OrderService {
     }
   }
 
-  static Future getAllOrdersByCount(skip, limit) async {
+  static Future getPastBookingByCount(skip, limit, date) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/order/count"),
-      headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
+      Uri.parse("http://64.225.85.5/booking/past"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"skip": skip, "limit": limit, "date": date}),
     );
     if (response.statusCode == 200) {
-      var responsedata = json.decode(response.body);
-      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      var responseData = json.decode(response.body);
+      List<Booking> orderList = responseData
+          .map<Booking>((itemMap) => Booking.fromJson(itemMap))
+          .toList();
       return orderList;
     } else {
       print(response.body);
       return false;
     }
   }
-  static Future orderCount() async {
+
+  static Future bookingCount() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/order/count"),
+      Uri.parse("http://64.225.85.5/booking/count"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
       var responseMap = json.decode(response.body);
-      return responseMap["ordercount"];
+      return responseMap["bookingCount"];
     } else {
       print(response.body);
       return 0;

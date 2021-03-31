@@ -27,7 +27,6 @@ class _OrderHistoryState extends State<OrderHistory> {
   List<Order> orderList = [];
   int page = 0;
   ScrollController _sc = new ScrollController();
-  bool isLoading = false;
   getNextData() async {
     setState(() {
       loading2 = true;
