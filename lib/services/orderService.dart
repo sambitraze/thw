@@ -32,12 +32,13 @@ class OrderService {
       print(response.body);
       return false;
     }
-  }
+  }  
 
-  static Future getAllOrders() async {
-    http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/order/"),
+  static Future getAllOrderByCount(skip, limit) async {
+    http.Response response = await http.post(
+      Uri.parse("http://64.225.85.5/order/count"),
       headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"skip":skip, "limit": limit}),
     );
     if (response.statusCode == 200) {
       var responsedata = json.decode(response.body);
@@ -47,11 +48,13 @@ class OrderService {
       print(response.body);
       return false;
     }
-  }
+  } 
 
-  static Future getAllOrdersByCount(skip, limit) async {
+  
+
+  static Future getAllConfirmedOrdersByCount(skip, limit) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/order/count"),
+      Uri.parse("http://64.225.85.5/order/confirmed/count"),
       headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
     );
     if (response.statusCode == 200) {
@@ -63,6 +66,24 @@ class OrderService {
       return false;
     }
   } 
+
+
+
+  static Future getAllUnconfirmedOrdersByCount(skip, limit) async {
+    http.Response response = await http.post(
+      Uri.parse("http://64.225.85.5/order/unconfirmed/count"),
+      headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
+    );
+    if (response.statusCode == 200) {
+      var responsedata = json.decode(response.body);
+      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      return orderList;
+    } else {
+      print(response.body);
+      return false;
+    }
+  } 
+
    static Future orderCount() async {
     http.Response response = await http.get(
       Uri.parse("http://64.225.85.5/order/count"),

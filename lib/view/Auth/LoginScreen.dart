@@ -1,15 +1,16 @@
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tandoorhutweb/view/homepage.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-   final scaffkey = new GlobalKey<ScaffoldState>();
+  final scaffkey = new GlobalKey<ScaffoldState>();
   bool isLoading = false;
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
@@ -22,22 +23,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   getlogin() async {
-    
     SharedPreferences pref = await SharedPreferences.getInstance();
     bool temp = pref.getBool("login");
     if (temp != null) {
       if (temp) {
         Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyHomePage(
-                     
-                    )));
+            context, MaterialPageRoute(builder: (context) => MyHomePage()));
       }
     }
   }
-
-  
 
   savelogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -47,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       key: scaffkey,
+      key: scaffkey,
       body: Stack(
         children: [
           Container(

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
@@ -11,7 +12,8 @@ import 'package:tandoorhutweb/view/Stock/StockHome.dart';
 import 'package:tandoorhutweb/view/offertop/offerTop.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  final int index;
+  MyHomePage({Key key, this.title, this.index}) : super(key: key);
 
   final String title;
 
@@ -20,18 +22,37 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex =0;
+  int _selectedIndex = 0;
   PageController pageController;
 
   @override
   void initState() {
     pageController = PageController(
-      initialPage: 0,
+      initialPage: widget.index != null ? widget.index : 0,
       keepPage: true,
     );
     super.initState();
+    FirebaseMessaging.onMessage.listen(
+      (RemoteMessage message) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            content: Text(
+              message.notification.body,
+              style: TextStyle(fontSize: 24),
+            ),
+            title: Text(
+              message.notification.title,
+              style: TextStyle(fontSize: 32),
+            ),
+          ),
+        );
+      },
+    );
   }
-
 
   @override
   void dispose() {
@@ -137,7 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.black,
                   ),
                 ),
-              ),NavigationRailDestination(
+              ),
+              NavigationRailDestination(
                 icon: Icon(Icons.delivery_dining),
                 selectedIcon: Icon(Icons.delivery_dining),
                 label: Text(

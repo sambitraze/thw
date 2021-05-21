@@ -24,7 +24,7 @@ class _DashBoardHomeState extends State<DashBoardHome> {
   
 
   getData() async {
-    orderList = await OrderService.getAllOrdersByCount(0,30);  
+    orderList = await OrderService.getAllOrderByCount(0,30);  
     userCount= await DeliveryBoyService.userCount();  
     staffCount= await DeliveryBoyService.deliveryBoyCount();  
     orderCount = await OrderService.orderCount();
