@@ -369,209 +369,177 @@ class _OrderHistoryState extends State<OrderHistory>
                                               ),
                                       )
                                     : Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0, vertical: 4.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  'Order No: ' +
-                                                      orderList2[index].orderId,
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                SizedBox(
-                                                  width: 16,
-                                                ),
-                                              ],
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: ListTile(
+                                          leading: Text(
+                                            'Order No: ' +
+                                                orderList2[index].orderId,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          title: Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                color: Colors.orange),
+                                            child: Text(
+                                              orderList2[index]
+                                                  .createdAt
+                                                  .toString(),
                                             ),
-                                            Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  'Order Time: ',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                          ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                "Rs. " +
+                                                    (double.parse(orderList2[
+                                                                    index]
+                                                                .amount) +
+                                                            double.parse(
+                                                              orderList2[index]
+                                                                  .gst,
+                                                            ))
+                                                        .toString(),
+                                              ),
+                                              SizedBox(
+                                                width: 50,
+                                              ),
+                                              Text(
+                                                'Order Type: ',
+                                                style: TextStyle(
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                orderList2[index].orderType,
+                                                style: TextStyle(
+                                                  fontSize: 20,
                                                 ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 2),
-                                                  child: Text(
-                                                      orderList2[index]
-                                                          .createdAt
-                                                          .toLocal()
-                                                          .toString(),
-                                                      style: TextStyle(
-                                                        fontSize: 18,
+                                              ),
+                                              SizedBox(
+                                                width: 50,
+                                              ),
+                                              Text('Status: '),
+                                              DropdownButton(
+                                                items: [
+                                                  DropdownMenuItem(
+                                                    child: Text("unconfirmed"),
+                                                    value: "unconfirmed",
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    child: Text("placed"),
+                                                    value: "placed",
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    child: Text(
+                                                        "out for delivery"),
+                                                    value: "out for delivery",
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    child: Text("cooking"),
+                                                    value: "cooking",
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    child: Text("completed"),
+                                                    value: "completed",
+                                                  ),
+                                                  DropdownMenuItem(
+                                                    child: Text("cancelled"),
+                                                    value: "cancelled",
+                                                  ),
+                                                ],
+                                                value: orderList2[index].status,
+                                                onChanged: (val) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        AlertDialog(
+                                                      content: Text(
+                                                        "Do you want to status of Order no : ${orderList[index].orderId} to $val ?",
                                                       ),
-                                                    ),
-                                                ),
-                                                SizedBox(
-                                                  width: 16,
-                                                ),
-                                                Text(
-                                                  "Rs. " +
-                                                      (double.parse(orderList2[
-                                                                      index]
-                                                                  .amount) +
-                                                              double.parse(
+                                                      actions: [
+                                                        MaterialButton(
+                                                          child: Text("Yes"),
+                                                          onPressed: () async {
+                                                            setState(
+                                                              () {
+                                                                orderList2[index]
+                                                                        .status =
+                                                                    val;
+                                                              },
+                                                            );
+                                                            await OrderService
+                                                                .updateOrder(
+                                                              jsonEncode(
                                                                 orderList2[
                                                                         index]
-                                                                    .gst,
-                                                              ))
-                                                          .toString(),
-                                                ),
-                                                SizedBox(
-                                                  width: 50,
-                                                ),
-                                                Text(
-                                                  'Order Type: ',
-                                                  style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  orderList2[index].orderType,
-                                                  style: TextStyle(
-                                                    fontSize: 18,
+                                                                    .toJson(),
+                                                              ),
+                                                            );
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                        ),
+                                                        MaterialButton(
+                                                          child: Text("No"),
+                                                          onPressed: () async {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                        )
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                              SizedBox(
+                                                width: 50,
+                                              ),
+                                              ClipOval(
+                                                child: Material(
+                                                  color: Colors
+                                                      .black, // button color
+                                                  child: InkWell(
+                                                    splashColor: Colors
+                                                        .green, // inkwell color
+                                                    child: SizedBox(
+                                                      width: 56,
+                                                      height: 56,
+                                                      child: Icon(
+                                                        Icons.menu,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    onTap: () {
+                                                      orderList2[index]
+                                                                  .orderType ==
+                                                              "Billing"
+                                                          ? showdialog(
+                                                              orderList2[index],
+                                                            )
+                                                          : Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        OrderDetailsScreen(
+                                                                  order:
+                                                                      orderList2[
+                                                                          index],
+                                                                ),
+                                                              ),
+                                                            );
+                                                    },
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  width: 50,
-                                                ),
-                                                Text('Status: '),
-                                                DropdownButton(
-                                                  items: [
-                                                    DropdownMenuItem(
-                                                      child:
-                                                          Text("unconfirmed"),
-                                                      value: "unconfirmed",
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      child: Text("placed"),
-                                                      value: "placed",
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      child: Text(
-                                                          "out for delivery"),
-                                                      value: "out for delivery",
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      child: Text("cooking"),
-                                                      value: "cooking",
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      child: Text("completed"),
-                                                      value: "completed",
-                                                    ),
-                                                    DropdownMenuItem(
-                                                      child: Text("cancelled"),
-                                                      value: "cancelled",
-                                                    ),
-                                                  ],
-                                                  value:
-                                                      orderList2[index].status,
-                                                  onChanged: (val) {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertDialog(
-                                                        content: Text(
-                                                          "Do you want to status of Order no : ${orderList2[index].orderId} to $val ?",
-                                                        ),
-                                                        actions: [
-                                                          MaterialButton(
-                                                            child: Text("Yes"),
-                                                            onPressed:
-                                                                () async {
-                                                              setState(
-                                                                () {
-                                                                  orderList2[
-                                                                          index]
-                                                                      .status = val;
-                                                                },
-                                                              );
-                                                              await OrderService
-                                                                  .updateOrder(
-                                                                jsonEncode(
-                                                                  orderList2[
-                                                                          index]
-                                                                      .toJson(),
-                                                                ),
-                                                              );
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                          ),
-                                                          MaterialButton(
-                                                            child: Text("No"),
-                                                            onPressed:
-                                                                () async {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                          )
-                                                        ],
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                                SizedBox(
-                                                  width: 50,
-                                                ),
-                                                ClipOval(
-                                                  child: Material(
-                                                    color: Colors
-                                                        .black, // button color
-                                                    child: InkWell(
-                                                      splashColor: Colors
-                                                          .green, // inkwell color
-                                                      child: SizedBox(
-                                                        width: 42,
-                                                        height: 42,
-                                                        child: Icon(
-                                                          Icons.menu,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                      onTap: () {
-                                                        orderList2[index]
-                                                                    .orderType ==
-                                                                "Billing"
-                                                            ? showdialog(
-                                                                orderList2[
-                                                                    index],
-                                                              )
-                                                            : Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          OrderDetailsScreen(
-                                                                    order: orderList2[
-                                                                        index],
-                                                                  ),
-                                                                ),
-                                                              );
-                                                      },
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ],
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       );
                               },

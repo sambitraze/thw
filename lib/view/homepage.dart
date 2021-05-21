@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tandoorhutweb/services/notificationService.dart';
 import 'package:tandoorhutweb/view/Auth/LoginScreen.dart';
 import 'package:tandoorhutweb/view/Billing/BillingHome.dart';
 import 'package:tandoorhutweb/view/Booking/bookingScreen.dart';
@@ -98,7 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   SharedPreferences pref =
                       await SharedPreferences.getInstance();
                   pref.setBool("login", false);
-
+                  pref.clear();
+                  await NotificationService.unsubscribeTopTopic();
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => LoginScreen(),

@@ -12,7 +12,6 @@ class TopService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -26,9 +25,10 @@ class TopService {
       var responseMap = json.decode(response.body);
       List<Top> tops =
           responseMap.map<Top>((itemMap) => Top.fromJson(itemMap)).toList();
-      return tops; 
+      return tops;
     } else {
-      print(response.body);
+      List<Top> tops = [];
+      return tops;
     }
   }
 

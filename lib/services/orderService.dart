@@ -10,14 +10,12 @@ class OrderService {
       body: payload,
     );
     if (response.statusCode == 200) {
-      var responsedata = json.decode(response.body);
-      print(responsedata);
       return true;
     } else {
-      print(response.body);
       return false;
     }
   }
+
   static Future updateOrder(payload) async {
     http.Response response = await http.put(
       Uri.parse("http://64.225.85.5/order/update"),
@@ -25,66 +23,67 @@ class OrderService {
       body: payload,
     );
     if (response.statusCode == 200) {
-      var responsedata = json.decode(response.body);
-      print(responsedata);
       return true;
     } else {
-      print(response.body);
       return false;
     }
-  }  
+  }
 
   static Future getAllOrderByCount(skip, limit) async {
     http.Response response = await http.post(
       Uri.parse("http://64.225.85.5/order/count"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"skip":skip, "limit": limit}),
+      body: jsonEncode({"skip": skip, "limit": limit}),
     );
     if (response.statusCode == 200) {
       var responsedata = json.decode(response.body);
-      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      List<Order> orderList = responsedata
+          .map<Order>((itemMap) => Order.fromJson(itemMap))
+          .toList();
       return orderList;
     } else {
-      print(response.body);
-      return false;
+      List<Order> orderList = [];
+      return orderList;
     }
-  } 
-
-  
+  }
 
   static Future getAllConfirmedOrdersByCount(skip, limit) async {
     http.Response response = await http.post(
       Uri.parse("http://64.225.85.5/order/confirmed/count"),
-      headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"skip": skip, "limit": limit}),
     );
     if (response.statusCode == 200) {
       var responsedata = json.decode(response.body);
-      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      List<Order> orderList = responsedata
+          .map<Order>((itemMap) => Order.fromJson(itemMap))
+          .toList();
       return orderList;
     } else {
-      print(response.body);
-      return false;
+      List<Order> orderList = [];
+      return orderList;
     }
-  } 
-
-
+  }
 
   static Future getAllUnconfirmedOrdersByCount(skip, limit) async {
     http.Response response = await http.post(
       Uri.parse("http://64.225.85.5/order/unconfirmed/count"),
-      headers: {"Content-Type": "application/json"},  body: jsonEncode({"skip":skip, "limit": limit}),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"skip": skip, "limit": limit}),
     );
     if (response.statusCode == 200) {
       var responsedata = json.decode(response.body);
-      List<Order> orderList = responsedata.map<Order>((itemMap) => Order.fromJson(itemMap)).toList();
+      List<Order> orderList = responsedata
+          .map<Order>((itemMap) => Order.fromJson(itemMap))
+          .toList();
       return orderList;
     } else {
-      print(response.body);
-      return false;
+      List<Order> orderList = [];
+      return orderList;
     }
-  } 
+  }
 
-   static Future orderCount() async {
+  static Future orderCount() async {
     http.Response response = await http.get(
       Uri.parse("http://64.225.85.5/order/count"),
       headers: {"Content-Type": "application/json"},
@@ -93,7 +92,6 @@ class OrderService {
       var responseMap = json.decode(response.body);
       return responseMap["ordercount"];
     } else {
-      print(response.body);
       return 0;
     }
   }

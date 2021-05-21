@@ -67,7 +67,6 @@ List<Item> itemList = [];
     });
     itemList = await ItemService.getAllItems();
     offers = await OfferService.getUnBlockedOffers();
-    print(offers.length);
     offers.forEach((element) {
       offerList.add(
         DropdownMenuItem(
@@ -719,7 +718,6 @@ List<Item> itemList = [];
                                           ),
                                           MaterialButton(
                                             onPressed: () async {
-                                              print(offer.toJson());
                                               setState(() {
                                                 load = true;
                                               });

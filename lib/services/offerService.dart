@@ -13,7 +13,6 @@ class OfferService {
       var responsedata = json.decode(response.body);
       return Offer.fromJson(responsedata);
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -30,10 +29,13 @@ class OfferService {
           responseMap.map<Offer>((itemMap) => Offer.fromJson(itemMap)).toList();
       return offers;
     } else {
-      print(response.body);
+      List<Offer> offers = [];
+      return offers;
     }
-  // ignore: missing_return
-  }static Future<List<Offer>> getUnBlockedOffers() async {
+    // ignore: missing_return
+  }
+
+  static Future<List<Offer>> getUnBlockedOffers() async {
     http.Response response = await http.get(
       Uri.parse("http://64.225.85.5/offer/unblocked"),
       headers: {"Content-Type": "application/json"},
@@ -44,7 +46,8 @@ class OfferService {
           responseMap.map<Offer>((itemMap) => Offer.fromJson(itemMap)).toList();
       return offers;
     } else {
-      print(response.body);
+      List<Offer> offers = [];
+      return offers;
     }
   }
 
@@ -60,6 +63,4 @@ class OfferService {
       return false;
     }
   }
-
- 
 }

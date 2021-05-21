@@ -13,7 +13,6 @@ class ItemService {
       var responsedata = json.decode(response.body);
       return Item.fromJson(responsedata);
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -30,7 +29,8 @@ class ItemService {
           responseMap.map<Item>((itemMap) => Item.fromJson(itemMap)).toList();
       return items;
     } else {
-      print(response.body);
+      List<Item> items = [];
+      return items;
     }
   }
 
@@ -39,11 +39,9 @@ class ItemService {
       Uri.parse("http://64.225.85.5/item/delete/$id"),
       headers: {"Content-Type": "application/json"},
     );
-    var decodedResponse = jsonDecode(response.body);
     if (response.statusCode == 200) {
       return true;
     } else {
-      print(decodedResponse);
       return false;
     }
   }

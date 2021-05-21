@@ -11,7 +11,6 @@ class PdfService {
     if (response.statusCode == 200) {
       return response.bodyBytes;
     } else {
-      print(response.body);
       return false;
     }
   }

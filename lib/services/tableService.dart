@@ -31,10 +31,8 @@ class TableService {
       body: jsonEncode({"name": "Table $number"}),
     );
     if (response.statusCode == 200) {
-      var responseData = json.decode(response.body);
       return true;
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -48,7 +46,6 @@ class TableService {
       var responseMap = json.decode(response.body);
       return responseMap["tablecount"];
     } else {
-      print(response.body);
       return 0;
     }
   }

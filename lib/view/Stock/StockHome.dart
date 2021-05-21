@@ -45,7 +45,6 @@ class _StockHomeState extends State<StockHome> {
             leading: IconButton(
                 icon: (Icon(Icons.cancel)),
                 onPressed: () {
-                  print(tempItemList[index].id);
                   delitem(tempItemList[index].id);
                 }),
           );
@@ -308,9 +307,6 @@ class _StockHomeState extends State<StockHome> {
                                           setState(() {
                                             if (addedItem != false) {
                                               itemList.add(addedItem);
-                                              print("item Added");
-                                            } else {
-                                              print("item not added");
                                             }
                                             loading = false;
                                             itemName.clear();

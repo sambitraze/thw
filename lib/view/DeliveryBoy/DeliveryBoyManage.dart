@@ -291,7 +291,6 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
           ),
           icon: Icon(Icons.lock),
           onPressed: () {
-            print(element.id);
             showDialog(
               context: context,
               // ignore: deprecated_member_use
@@ -624,7 +623,6 @@ class _DeliveryBoyManageState extends State<DeliveryBoyManage> {
                                                 ),
                                                 icon: Icon(Icons.lock),
                                                 onPressed: () {
-                                                  print(deliveryBoy.id);
                                                   showDialog(
                                                     context: context,
                                                     // ignore: deprecated_member_use

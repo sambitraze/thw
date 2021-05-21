@@ -15,7 +15,6 @@ class DeliveryBoyService {
       DeliveryBoy deliveryBoy = DeliveryBoy.fromJson(responseMap);
       return deliveryBoy;
     } else {
-      print(response.body);
       
     }
   }
@@ -30,7 +29,6 @@ class DeliveryBoyService {
       DeliveryBoy deliveryBoy = DeliveryBoy.fromJson(responseMap);
       return deliveryBoy;
     } else {
-      print(response.body);
       return jsonDecode(response.body);
     }
   }
@@ -43,7 +41,6 @@ class DeliveryBoyService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -60,7 +57,6 @@ class DeliveryBoyService {
           responseMap.map<DeliveryBoy>((itemMap) => DeliveryBoy.fromJson(itemMap)).toList();
       return items;
     } else {
-      print(response.body);
     }
   }
   static Future getAllUser() async {
@@ -72,7 +68,6 @@ class DeliveryBoyService {
       var responseMap = json.decode(response.body);
       return responseMap.length;
     } else {
-      print(response.body);
       return 0;
     }
   }
@@ -86,7 +81,6 @@ class DeliveryBoyService {
       var responseMap = json.decode(response.body);      
       return responseMap["usercount"];
     } else {
-      print(response.body);
       return 0;
     }
   }
@@ -99,7 +93,6 @@ class DeliveryBoyService {
       var responseMap = json.decode(response.body);      
       return responseMap["deliverycount"];
     } else {
-      print(response.body);
       return 0;
     }
   }

@@ -17,7 +17,6 @@ class BookingService {
           .toList();
       return orderList;
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -35,7 +34,6 @@ class BookingService {
           .toList();
       return orderList;
     } else {
-      print(response.body);
       return false;
     }
   }
@@ -49,7 +47,6 @@ class BookingService {
       var responseMap = json.decode(response.body);
       return responseMap["bookingCount"];
     } else {
-      print(response.body);
       return 0;
     }
   }
