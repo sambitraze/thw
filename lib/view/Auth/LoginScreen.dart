@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,13 +13,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
-  @override
-  void initState() {
-    // TODO: implement initState
-    getlogin();
-    super.initState();
-    
-  }
 
   getlogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();

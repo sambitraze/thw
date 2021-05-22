@@ -57,7 +57,6 @@ class _StockHomeState extends State<StockHome> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getData();
     super.initState();
   }
