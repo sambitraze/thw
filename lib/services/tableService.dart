@@ -26,7 +26,7 @@ import 'package:http/http.dart' as http;
 class TableService {
   static Future createTable(number) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/table/create"),
+      Uri.parse("https://tandoorhut.co/table/create"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"name": "Table $number"}),
     );
@@ -39,7 +39,7 @@ class TableService {
 
   static Future tableCount() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/table/count"),
+      Uri.parse("https://tandoorhut.co/table/count"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {

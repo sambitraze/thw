@@ -5,7 +5,7 @@ import 'package:tandoorhutweb/models/Item.dart';
 class ItemService {
   static Future createItem(payload) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/item/create"),
+      Uri.parse("https://tandoorhut.co/item/create"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -20,7 +20,7 @@ class ItemService {
   // ignore: missing_return
   static Future<List<Item>> getAllItems() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/item/"),
+      Uri.parse("https://tandoorhut.co/item/"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -36,7 +36,7 @@ class ItemService {
 
   static Future<bool> delteItem(id) async {
     http.Response response = await http.delete(
-      Uri.parse("http://64.225.85.5/item/delete/$id"),
+      Uri.parse("https://tandoorhut.co/item/delete/$id"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {

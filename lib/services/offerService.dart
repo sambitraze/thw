@@ -5,7 +5,7 @@ import '../models/offers.dart';
 class OfferService {
   static Future createOffer(payload) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/offer/create"),
+      Uri.parse("s://tandoorhut.co/offer/create"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -20,7 +20,7 @@ class OfferService {
   // ignore: missing_return
   static Future<List<Offer>> getOffers() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/offer/"),
+      Uri.parse("https://tandoorhut.co/offer/"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -37,7 +37,7 @@ class OfferService {
 
   static Future<List<Offer>> getUnBlockedOffers() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/offer/unblocked"),
+      Uri.parse("https://tandoorhut.co/offer/unblocked"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -53,7 +53,7 @@ class OfferService {
 
   static Future<bool> updateOffer(payload) async {
     http.Response response = await http.put(
-      Uri.parse("http://64.225.85.5/offer/update"),
+      Uri.parse("https://tandoorhut.co/offer/update"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );

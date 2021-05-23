@@ -6,8 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-void main() async {
-  await NotificationService.subscribeTopTopic();
+void main()  {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }

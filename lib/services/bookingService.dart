@@ -3,10 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:tandoorhutweb/models/booking.dart';
 
 class BookingService {
-
   static Future getTodayBooking(date) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/booking/today"),
+      Uri.parse("https://tandoorhut.co/booking/today"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(({"date": date})),
     );
@@ -23,7 +22,7 @@ class BookingService {
 
   static Future getPastBookingByCount(skip, limit, date) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/booking/past"),
+      Uri.parse("https://tandoorhut.co/booking/past"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"skip": skip, "limit": limit, "date": date}),
     );
@@ -40,7 +39,7 @@ class BookingService {
 
   static Future bookingCount() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/booking/count"),
+      Uri.parse("https://tandoorhut.co/booking/count"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {

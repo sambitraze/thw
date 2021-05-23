@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tandoorhutweb/services/notificationService.dart';
 import 'package:tandoorhutweb/view/homepage.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,6 +10,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+    getlogin();
+  }
+
   final scaffkey = new GlobalKey<ScaffoldState>();
   bool isLoading = false;
   TextEditingController email = TextEditingController();
@@ -153,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       isLoading = false;
                     });
                     if (userCredential.user.uid != null) {
+                      // await NotificationService.subscribeTopTopic();
                       savelogin();
                       Navigator.of(context).push(
                         MaterialPageRoute(

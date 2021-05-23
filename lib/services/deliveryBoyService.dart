@@ -6,7 +6,7 @@ import 'package:tandoorhutweb/models/deliveryBoy.dart';
 class DeliveryBoyService {
   static Future createDeliveryBoy(payload) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/deliveryBoy/create"),
+      Uri.parse("https://tandoorhut.co/deliveryBoy/create"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -14,13 +14,12 @@ class DeliveryBoyService {
       var responseMap = json.decode(response.body);
       DeliveryBoy deliveryBoy = DeliveryBoy.fromJson(responseMap);
       return deliveryBoy;
-    } else {
-      
-    }
+    } else {}
   }
+
   static Future getDeliveryBoyByEmail(email) async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/deliveryBoy/email"),
+      Uri.parse("https://tandoorhut.co/deliveryBoy/email"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email}),
     );
@@ -32,9 +31,10 @@ class DeliveryBoyService {
       return jsonDecode(response.body);
     }
   }
+
   static Future<bool> updateDeliveryBoy(payload) async {
     http.Response response = await http.put(
-      Uri.parse("http://64.225.85.5/deliveryBoy/update"),
+      Uri.parse("https://tandoorhut.co/deliveryBoy/update"),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -48,20 +48,21 @@ class DeliveryBoyService {
   // ignore: missing_return
   static Future<List<DeliveryBoy>> getAllDeliveryBoy() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/deliveryBoy/"),
+      Uri.parse("https://tandoorhut.co/deliveryBoy/"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
       var responseMap = json.decode(response.body);
-      List<DeliveryBoy> items =
-          responseMap.map<DeliveryBoy>((itemMap) => DeliveryBoy.fromJson(itemMap)).toList();
+      List<DeliveryBoy> items = responseMap
+          .map<DeliveryBoy>((itemMap) => DeliveryBoy.fromJson(itemMap))
+          .toList();
       return items;
-    } else {
-    }
+    } else {}
   }
+
   static Future getAllUser() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/user/"),
+      Uri.parse("https://tandoorhut.co/user/"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
@@ -74,27 +75,27 @@ class DeliveryBoyService {
 
   static Future userCount() async {
     http.Response response = await http.post(
-      Uri.parse("http://64.225.85.5/user/count"),
+      Uri.parse("https://tandoorhut.co/user/count"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
-      var responseMap = json.decode(response.body);      
+      var responseMap = json.decode(response.body);
       return responseMap["usercount"];
     } else {
       return 0;
     }
   }
+
   static Future deliveryBoyCount() async {
     http.Response response = await http.get(
-      Uri.parse("http://64.225.85.5/deliveryBoy/count"),
+      Uri.parse("https://tandoorhut.co/deliveryBoy/count"),
       headers: {"Content-Type": "application/json"},
     );
     if (response.statusCode == 200) {
-      var responseMap = json.decode(response.body);      
+      var responseMap = json.decode(response.body);
       return responseMap["deliverycount"];
     } else {
       return 0;
     }
   }
-  
 }

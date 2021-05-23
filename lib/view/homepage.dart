@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       await SharedPreferences.getInstance();
                   pref.setBool("login", false);
                   pref.clear();
-                  await NotificationService.unsubscribeTopTopic();
+                  // await NotificationService.unsubscribeTopTopic();
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
                       builder: (context) => LoginScreen(),
