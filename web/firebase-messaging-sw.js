@@ -21,16 +21,18 @@ if (!firebase.apps.length) {
 
 const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  console.log(
+    "[firebase-messaging-sw.js] Received background message ",
+    payload
+  );
   // Customize notification here
-  const notificationTitle = 'Background Message Title';
+  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: 'Background Message body.',
-    icon: '/favicon.png'
+    body: payload.notification.body,
+    icon: "/favicon.png",
   };
 
-  self.registration.showNotification(notificationTitle,
-    notificationOptions);
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 // messaging.setBackgroundMessageHandler(function (payload) {
 //   const promiseChain = clients
