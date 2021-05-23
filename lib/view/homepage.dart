@@ -11,6 +11,7 @@ import 'package:tandoorhutweb/view/DeliveryBoy/DeliveryBoyManage.dart';
 import 'package:tandoorhutweb/view/Orders/OrderHistory.dart';
 import 'package:tandoorhutweb/view/Stock/StockHome.dart';
 import 'package:tandoorhutweb/view/offertop/offerTop.dart';
+import 'package:tandoorhutweb/view/settings/SettingScreen.dart';
 
 class MyHomePage extends StatefulWidget {
   final int index;
@@ -88,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height - 750),
+                  top: MediaQuery.of(context).size.height - 850),
               child: IconButton(
                 icon: Icon(
                   Icons.exit_to_app,
@@ -181,6 +182,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
+              NavigationRailDestination(
+                icon: Icon(Icons.notifications),
+                selectedIcon: Icon(Icons.notifications_active_rounded),
+                label: Text(
+                  'Settings',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
             ],
           ),
           Expanded(
@@ -195,6 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 BookingScreen(),
                 DeliveryBoyManage(),
                 BillingHome(),
+                SettingScreen(),
               ],
               controller: pageController,
               onPageChanged: (index) {
