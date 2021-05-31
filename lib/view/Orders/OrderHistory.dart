@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tandoorhutweb/models/order.dart';
 import 'package:tandoorhutweb/services/orderService.dart';
+import 'package:tandoorhutweb/services/pushService.dart';
 import 'package:tandoorhutweb/view/Orders/OrderDetails.dart';
 
 class OrderHistory extends StatefulWidget {
@@ -59,6 +60,7 @@ class _OrderHistoryState extends State<OrderHistory>
   getData() async {
     setState(() {
       loading = true;
+      orderList.clear();
     });
     orderList = await OrderService.getAllUnconfirmedOrdersByCount(page, 15);
     setState(() {
@@ -83,6 +85,7 @@ class _OrderHistoryState extends State<OrderHistory>
   getData2() async {
     setState(() {
       loading222 = true;
+      orderList2.clear();
     });
     orderList2 = await OrderService.getAllConfirmedOrdersByCount(page, 15);
     setState(() {
@@ -139,9 +142,28 @@ class _OrderHistoryState extends State<OrderHistory>
                 Container(
                   padding: EdgeInsets.only(left: 100, top: 30, bottom: 20),
                   alignment: Alignment.topLeft,
-                  child: Text(
-                    "Order History",
-                    style: TextStyle(fontSize: 32),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Order History",
+                        style: TextStyle(fontSize: 32),
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            page = 0;
+                            page2 = 0;
+                          });
+                          getData();
+                          getData2();
+                        },
+                        child: Icon(Icons.refresh),
+                      )
+                    ],
                   ),
                 ),
                 TabBar(
@@ -194,7 +216,10 @@ class _OrderHistoryState extends State<OrderHistory>
                                     ? Center(
                                         child: loading2
                                             ? CircularProgressIndicator()
-                                            : Container())
+                                            : Container(
+                                              padding: EdgeInsets.all(16),
+                                              child: Text("No Unconfirmed Orders"),
+                                            ))
                                     : Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ListTile(
@@ -290,6 +315,20 @@ class _OrderHistoryState extends State<OrderHistory>
                                                                     .toJson(),
                                                               ),
                                                             );
+                                                            orderList[index]
+                                                                        .orderType !=
+                                                                    "Billing"
+                                                                ? await PushService.sendPushToUser(
+                                                                    "Order Update",
+                                                                    "Status of the order no : ${orderList[index].orderId} has been changed to ${orderList[index].status == "placed" ? "confirmed" :orderList[index].status }",
+                                                                    orderList[
+                                                                            index]
+                                                                        .customer
+                                                                        .deviceToken)
+                                                                // ignore: unnecessary_statements
+                                                                : () {
+                                                                    print("ok");
+                                                                  };
                                                             Navigator.of(
                                                                     context)
                                                                 .pop();
@@ -364,8 +403,9 @@ class _OrderHistoryState extends State<OrderHistory>
                                         child: loading22
                                             ? CircularProgressIndicator()
                                             : Container(
+                                              padding: EdgeInsets.all(16),
                                                 child: Text(
-                                                    "No Unconfirmed orders"),
+                                                    "No confirmed orders"),
                                               ),
                                       )
                                     : Padding(
@@ -406,14 +446,14 @@ class _OrderHistoryState extends State<OrderHistory>
                                                       horizontal: 8,
                                                       vertical: 2),
                                                   child: Text(
-                                                      orderList2[index]
-                                                          .createdAt
-                                                          .toLocal()
-                                                          .toString(),
-                                                      style: TextStyle(
-                                                        fontSize: 18,
-                                                      ),
+                                                    orderList2[index]
+                                                        .createdAt
+                                                        .toLocal()
+                                                        .toString(),
+                                                    style: TextStyle(
+                                                      fontSize: 18,
                                                     ),
+                                                  ),
                                                 ),
                                                 SizedBox(
                                                   width: 16,
@@ -509,6 +549,21 @@ class _OrderHistoryState extends State<OrderHistory>
                                                                       .toJson(),
                                                                 ),
                                                               );
+                                                              orderList2[index]
+                                                                          .orderType !=
+                                                                      "Billing"
+                                                                  ? await PushService.sendPushToUser(
+                                                                      "Order Update",
+                                                                      "Status of the order no : ${orderList2[index].orderId} has been changed to ${orderList2[index].status}",
+                                                                      orderList2[
+                                                                              index]
+                                                                          .customer
+                                                                          .deviceToken)
+                                                                  // ignore: unnecessary_statements
+                                                                  : () {
+                                                                      print(
+                                                                          "ok");
+                                                                    };
                                                               Navigator.of(
                                                                       context)
                                                                   .pop();

@@ -300,7 +300,6 @@ class _StockHomeState extends State<StockHome> {
                                             isVeg: isveg,
                                             photoUrl: "www.google.com",
                                             rating: "5.0",
-
                                             price: price.text,
                                           ).toJson()));
                                           setState(() {
