@@ -217,9 +217,10 @@ class _OrderHistoryState extends State<OrderHistory>
                                         child: loading2
                                             ? CircularProgressIndicator()
                                             : Container(
-                                              padding: EdgeInsets.all(16),
-                                              child: Text("No Unconfirmed Orders"),
-                                            ))
+                                                padding: EdgeInsets.all(16),
+                                                child: Text(
+                                                    "No Unconfirmed Orders"),
+                                              ))
                                     : Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: ListTile(
@@ -320,10 +321,24 @@ class _OrderHistoryState extends State<OrderHistory>
                                                                     "Billing"
                                                                 ? await PushService.sendPushToUser(
                                                                     "Order Update",
-                                                                    "Status of the order no : ${orderList[index].orderId} has been changed to ${orderList[index].status == "placed" ? "confirmed" :orderList[index].status }",
+                                                                    "Status of the order no : ${orderList[index].orderId} has been changed to ${orderList[index].status == "placed" ? "confirmed" : orderList[index].status}",
                                                                     orderList[
                                                                             index]
                                                                         .customer
+                                                                        .deviceToken)
+                                                                // ignore: unnecessary_statements
+                                                                : () {
+                                                                    print("ok");
+                                                                  };
+                                                            orderList[index]
+                                                                        .orderType !=
+                                                                    "Billing"
+                                                                ? await PushService.sendPushToUser(
+                                                                    "Order Update",
+                                                                    "Status of the order no : ${orderList[index].orderId} has been changed to ${orderList[index].status}",
+                                                                    orderList[
+                                                                            index]
+                                                                        .deliveryby
                                                                         .deviceToken)
                                                                 // ignore: unnecessary_statements
                                                                 : () {
@@ -403,9 +418,9 @@ class _OrderHistoryState extends State<OrderHistory>
                                         child: loading22
                                             ? CircularProgressIndicator()
                                             : Container(
-                                              padding: EdgeInsets.all(16),
-                                                child: Text(
-                                                    "No confirmed orders"),
+                                                padding: EdgeInsets.all(16),
+                                                child:
+                                                    Text("No confirmed orders"),
                                               ),
                                       )
                                     : Padding(
@@ -558,6 +573,21 @@ class _OrderHistoryState extends State<OrderHistory>
                                                                       orderList2[
                                                                               index]
                                                                           .customer
+                                                                          .deviceToken)
+                                                                  // ignore: unnecessary_statements
+                                                                  : () {
+                                                                      print(
+                                                                          "ok");
+                                                                    };
+                                                              orderList2[index]
+                                                                          .orderType !=
+                                                                      "Billing"
+                                                                  ? await PushService.sendPushToUser(
+                                                                      "Order Update",
+                                                                      "Status of the order no : ${orderList2[index].orderId} has been changed to ${orderList2[index].status}",
+                                                                      orderList2[
+                                                                              index]
+                                                                          .deliveryby
                                                                           .deviceToken)
                                                                   // ignore: unnecessary_statements
                                                                   : () {
